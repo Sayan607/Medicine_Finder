@@ -5,11 +5,11 @@ export async function POST(req: NextRequest) {
   if (!query || query.trim().length < 2) return NextResponse.json({ suggestions: [] });
 
   const prompt = `List up to 6 Indian medicine brand names or salt names that start with or closely match "${query}".
-Return ONLY a raw JSON array of strings. No explanation, no markdown, no code fences.
-Example: ["Crocin","Calpol","Cetirizine","Cipla","Combiflam","Cofsils"]`;
+Return ONLY a raw JSON array of strings. No explanation, no markdown.
+Example: ["Crocin","Calpol","Cetirizine","Combiflam","Cofsils","Cipla"]`;
 
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.GROQ_API_KEY}` },
       body: JSON.stringify({
@@ -20,7 +20,7 @@ Example: ["Crocin","Calpol","Cetirizine","Cipla","Combiflam","Cofsils"]`;
         ],
       }),
     });
-    const data = await response.json();
+    const data = await r.json();
     const text = data.choices?.[0]?.message?.content ?? "";
     const match = text.match(/\[[\s\S]*\]/);
     if (!match) return NextResponse.json({ suggestions: [] });
