@@ -575,8 +575,8 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .footer-inner { width: 100%; max-width: 640px; }
 .footer-top { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 36px; }
 .footer-logo-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.footer-logo-img { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: #fff; }
-.footer-logo-img img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
+.footer-logo-img { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: #fff; }
+.footer-logo-img img { width: 140%; height: 140%; object-fit: contain; display: block; margin: -20% 0 0 -20%; }
 .footer-app-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; }
 .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
 .footer-desc { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 440px; }
