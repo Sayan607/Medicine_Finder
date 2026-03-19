@@ -1,40 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { query, language } = await req.json();
-
-  if (!query || query.trim().length < 2) return NextResponse.json({ results: [] });
+  const { medicines, language } = await req.json();
+  if (!medicines || medicines.length < 2) return NextResponse.json({ error: "Need at least 2 medicines" });
 
   const isBengali = language === "bn";
 
-  const prompt = `You are a comprehensive medicine database for India. User searched: "${query}".
+  const prompt = `You are a clinical pharmacology expert for India. Check interactions between these medicines: ${medicines.join(", ")}.
 
-This could be a brand name, salt/generic name, symptom, or disease.
+Return a single JSON object (not array) with ALL these fields:
 
-Return a JSON array of up to 8 matching Indian medicines. Each object must have ALL fields:
-
-- name: brand name (string)
-- salt: active ingredient (string)
-- manufacturer: Indian company name (string)
-- price: Indian MRP in rupees for standard strip (number)
-- type: "Tablet"/"Syrup"/"Capsule"/"Injection"/"Gel"/"Drops" (string)
-- uses: what it treats ${isBengali ? "in Bengali" : ""} (string, 1-2 sentences)
-- dosage: typical adult dose ${isBengali ? "in Bengali" : ""} (string)
-- whenToEat: ONLY one of: "Before food"/"After food"/"With food"/"Empty stomach"/"Any time" ${isBengali ? "- translate to Bengali" : ""} (string)
-- sideEffects: array of 3-5 common side effects ${isBengali ? "in Bengali" : ""} (string[])
-- warnings: { pregnancy: string, children: string, elderly: string } ${isBengali ? "in Bengali" : ""}
-- interactions: array of 2-4 medicines/substances to avoid (string[])
-- safetyScore: number from 1-10 (1=completely safe, 10=extremely dangerous) (number)
-- safetyVerdict: ONLY one of: "Safe"/"Caution"/"Avoid" (string)
-- interactionReason: 2-3 sentences explaining why it is safe or unsafe to take ${isBengali ? "in Bengali" : ""} (string)
-- keyPoints: array of 3-5 main highlighted points about safety or caution ${isBengali ? "in Bengali" : ""} (string[])
+- overall: ONLY one of: "safe"/"warning"/"dangerous"
+- summary: 1-2 sentence overall summary ${isBengali ? "in Bengali" : ""}
+- safeToTake: boolean
+- advice: what the patient should do ${isBengali ? "in Bengali" : ""} (string)
+- safetyScore: number 1-10 (1=completely safe together, 10=extremely dangerous together)
+- safetyVerdict: ONLY one of: "Safe"/"Caution"/"Avoid"
+- interactionReason: 2-3 sentences explaining WHY these medicines interact or don't ${isBengali ? "in Bengali" : ""} (string)
+- keyPoints: array of 3-5 important highlighted points about this combination ${isBengali ? "in Bengali" : ""} (string[])
+- pairs: array of interaction pairs, each with:
+  - medicines: array of 2 medicine names
+  - severity: "safe"/"warning"/"dangerous"
+  - description: short description ${isBengali ? "in Bengali" : ""}
+  - why: why this interaction happens ${isBengali ? "in Bengali" : ""}
+  - whatToDo: what to do about it ${isBengali ? "in Bengali" : ""}
 
 Rules:
-- If query is symptom/disease, return relevant medicines for that condition
-- Prioritize exact match first, then same-salt cheaper alternatives
-- Use realistic Indian MRP prices
 - safetyScore 1-3 = Safe (green), 4-6 = Caution (yellow), 7-10 = Avoid (red)
-- Return ONLY raw JSON array. No markdown, no code fences.`;
+- Be medically accurate for Indian medicine brands
+- Return ONLY raw JSON object. No markdown, no code fences.`;
 
   try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -46,11 +40,11 @@ Rules:
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         temperature: 0.2,
-        max_tokens: 3000,
+        max_tokens: 2000,
         messages: [
           {
             role: "system",
-            content: "You are a medicine database for India. Respond with only a raw JSON array.",
+            content: "You are a clinical pharmacology expert. Respond with only a raw JSON object.",
           },
           { role: "user", content: prompt },
         ],
@@ -59,13 +53,11 @@ Rules:
 
     const data = await r.json();
     const text = data.choices?.[0]?.message?.content ?? "";
-    const match = text.match(/\[[\s\S]*\]/);
-
-    if (!match) return NextResponse.json({ results: [] });
-
-    return NextResponse.json({ results: JSON.parse(match[0]) });
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) return NextResponse.json({ error: "No result" });
+    return NextResponse.json(JSON.parse(match[0]));
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ results: [], error: "Failed" }, { status: 500 });
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

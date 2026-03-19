@@ -19,6 +19,8 @@ type Medicine = {
 
 type InteractionResult = {
   overall: Safety; summary: string; safeToTake: boolean; advice: string;
+  safetyScore?: number; safetyVerdict?: string;
+  interactionReason?: string; keyPoints?: string[];
   pairs: Array<{ medicines: string[]; severity: Safety; description: string; why: string; whatToDo: string }>;
 };
 
@@ -1215,6 +1217,44 @@ export default function Home() {
                       <div className="safety-summary">{interactResult.summary}</div>
                     </div>
                   </div>
+
+                  {/* CAUTION SCALE */}
+                  {interactResult.safetyScore !== undefined && (
+                    (() => {
+                      const score = interactResult.safetyScore!;
+                      const color = score <= 3 ? "green" : score <= 6 ? "yellow" : "red";
+                      const emoji = score <= 3 ? "✅" : score <= 6 ? "⚠️" : "🚫";
+                      return (
+                        <div className={`caution-scale ${color}`} style={{ borderRadius: 0, borderLeft: "none", borderRight: "none", borderTop: "none" }}>
+                          <div className="caution-header">
+                            <span className="caution-verdict">{emoji} {interactResult.safetyVerdict ?? "Unknown"}</span>
+                            <span className="caution-score">{score}/10</span>
+                          </div>
+                          <div className="caution-bar-wrap">
+                            <div className="caution-bar-fill" style={{ width: `${score * 10}%` }} />
+                          </div>
+                          <div className="caution-ticks">
+                            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                              <span key={n} className="caution-tick" style={{ fontWeight: n === score ? 800 : 400 }}>{n}</span>
+                            ))}
+                          </div>
+                          <div className="caution-legend">
+                            <span style={{ color: "#16a34a" }}>● 1–3 Safe</span>
+                            <span style={{ color: "#d97706" }}>● 4–6 Caution</span>
+                            <span style={{ color: "#dc2626" }}>● 7–10 Avoid</span>
+                          </div>
+                          {interactResult.interactionReason && <p className="caution-reason">{interactResult.interactionReason}</p>}
+                          {interactResult.keyPoints && interactResult.keyPoints.length > 0 && (
+                            <div className="caution-points">
+                              {interactResult.keyPoints.map((pt, k) => (
+                                <div key={k} className="caution-point"><span>•</span><span>{pt}</span></div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()
+                  )}
                   <div className="interact-body">
                     {interactResult.pairs?.length > 0 && (
                       <div className="interact-pairs">
