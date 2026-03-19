@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata = {
-  title: "MedFind – From prescription to price, we've got you covered",
+  title: "MedMind – From prescription to price, we've got you covered",
   description: "Scan your prescription, get medicine details, timings, and compare prices across Indian brands instantly.",
   openGraph: {
     title: "MedFind – From prescription to price, we've got you covered",
