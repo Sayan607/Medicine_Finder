@@ -575,7 +575,7 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .footer-inner { width: 100%; max-width: 640px; }
 .footer-top { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 36px; }
 .footer-logo-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.footer-logo-img { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: #fff; }
+.footer-logo-img { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: #fff; }
 .footer-logo-img img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
 .footer-app-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; }
 .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
