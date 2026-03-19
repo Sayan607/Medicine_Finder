@@ -699,7 +699,11 @@ export default function Home() {
   const searchWrapRef = useRef<HTMLDivElement>(null);
   const checkerWrapRef = useRef<HTMLDivElement>(null);
   const queryRef = useRef(query);
+  const langRef = useRef(lang);
+  const sortRef = useRef(sort);
   useEffect(() => { queryRef.current = query; }, [query]);
+  useEffect(() => { langRef.current = lang; }, [lang]);
+  useEffect(() => { sortRef.current = sort; }, [sort]);
 
   useEffect(() => {
     try {
@@ -758,19 +762,25 @@ export default function Home() {
   const sortArr = (arr: Medicine[], s: string) =>
     [...arr].sort((a, b) => s === "low" ? a.price - b.price : b.price - a.price);
 
-  const searchMed = async (q?: string) => {
+  const searchMed = useCallback(async (q?: string) => {
     const qry = (q ?? queryRef.current).trim();
     if (!qry) return;
+    const currentLang = langRef.current;
+    const currentSort = sortRef.current;
     setLoading(true); setError(""); setResults(null); setShowSug(false); setExpanded(null);
     addHistory(qry);
     try {
-      const r = await fetch("/api/medicine", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qry, language: lang }) });
+      const r = await fetch("/api/medicine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: qry, language: currentLang })
+      });
       const d = await r.json();
       if (d.error) setError("Something went wrong. Please try again.");
-      else setResults(sortArr(d.results ?? [], sort));
+      else setResults(sortArr(d.results ?? [], currentSort));
     } catch { setError("Network error. Please check your connection."); }
     finally { setLoading(false); }
-  };
+  }, []);
 
   useEffect(() => {
     if (results?.length) setResults(prev => prev ? sortArr(prev, sort) : prev);
@@ -839,18 +849,24 @@ export default function Home() {
     reader.readAsDataURL(file); e.target.value = "";
   };
 
-  const checkInteract = async (overrideMeds?: string[]) => {
+  const checkInteract = useCallback(async (overrideMeds?: string[]) => {
     const meds = overrideMeds ?? checkerMeds;
     if (meds.length < 2) return;
     if (overrideMeds) setCheckerMeds(overrideMeds);
     setCheckLoading(true); setCheckError(""); setInteractResult(null); setTab("checker");
     try {
-      const r = await fetch("/api/interact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ medicines: meds, language: lang }) });
-      const d = await r.json();
+      const r = await fetch("/api/interact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ medicines: meds, language: langRef.current })
+      });
+      const text = await r.text();
+      const clean = text.replace(/```json|```/g, "").trim();
+      const d = JSON.parse(clean);
       if (d.error) setCheckError("Failed to check interactions."); else setInteractResult(d);
-    } catch { setCheckError("Network error."); }
+    } catch (e) { console.error(e); setCheckError("Failed to check interactions."); }
     finally { setCheckLoading(false); }
-  };
+  }, [checkerMeds]);
 
   const shareResult = async (m: Medicine, i: number) => {
     const text = `💊 ${m.name} (${m.salt})\n💰 ₹${m.price} — ${m.type}\n🏭 ${m.manufacturer}\n📋 ${m.uses}\n⏰ ${m.whenToEat}\n\nFound on MedMind — India's smartest medicine companion`;
