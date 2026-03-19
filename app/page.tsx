@@ -173,8 +173,9 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
   overflow: hidden; flex-shrink: 0;
   box-shadow: 0 4px 14px rgba(13,148,136,0.25), 0 1px 4px rgba(0,0,0,0.1);
   border: 2px solid rgba(13,148,136,0.2);
+  background: #fff;
 }
-.logo-ring img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.logo-ring img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 6px; }
 .app-name {
   font-family: 'Instrument Sans', sans-serif;
   font-size: 30px; font-weight: 700; line-height: 1;
@@ -573,8 +574,8 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .footer-inner { width: 100%; max-width: 640px; }
 .footer-top { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 36px; }
 .footer-logo-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.footer-logo-img { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); }
-.footer-logo-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.footer-logo-img { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.15); background: #fff; }
+.footer-logo-img img { width: 100%; height: 100%; object-fit: contain; padding: 4px; display: block; }
 .footer-app-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; }
 .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
 .footer-desc { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 440px; }
