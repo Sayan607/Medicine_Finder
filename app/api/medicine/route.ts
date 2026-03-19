@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// 1. THIS IS THE MAGIC LINE FOR VERCEL SPEED
+export const runtime = "edge"; 
+
 export async function POST(req: NextRequest) {
   const { query, language } = await req.json();
 
@@ -8,9 +11,10 @@ export async function POST(req: NextRequest) {
 
   const isBengali = language === "bn";
 
+  // 2. REDUCED FROM 8 TO 4 MEDICINES TO DOUBLE GENERATION SPEED
   const prompt = `You are a comprehensive medicine database for India. User searched: "${query}".
 SPELLING TOLERANCE: If the query has spelling mistakes but clearly refers to a real medicine, treat it as that medicine.
-Return a JSON object with a single key "results" containing an array of up to 8 matching Indian medicines. 
+Return a JSON object with a single key "results" containing an array of up to 4 matching Indian medicines. 
 Each object must have:
 - name: brand name (string)
 - salt: active ingredient (string)
@@ -31,7 +35,7 @@ Each object must have:
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-flash-lite", // 3. SWITCHED TO THE ULTRA-FAST LITE MODEL
       generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
     });
 
