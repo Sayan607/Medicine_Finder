@@ -1,14 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "MediFind — Compare Medicine Prices",
-  description: "Search any medicine and compare prices instantly across Indian brands",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "MediFind",
+export const metadata = {
+  title: "MedFind – From prescription to price, we've got you covered",
+  description: "Scan your prescription, get medicine details, timings, and compare prices across Indian brands instantly.",
+  openGraph: {
+    title: "MedFind – From prescription to price, we've got you covered",
+    description: "Scan your prescription, get medicine details, timings, and compare prices across Indian brands instantly.",
   },
 };
 
