@@ -5,7 +5,7 @@ export const metadata = {
   title: "MedMind – From prescription to price, we've got you covered",
   description: "Scan your prescription, get medicine details, timings, and compare prices across Indian brands instantly.",
   openGraph: {
-    title: "MedFind – From prescription to price, we've got you covered",
+    title: "MedMind – From prescription to price, we've got you covered",
     description: "Scan your prescription, get medicine details, timings, and compare prices across Indian brands instantly.",
   },
 };
