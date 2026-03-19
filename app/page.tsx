@@ -682,6 +682,8 @@ export default function Home() {
   const [interactResult, setInteractResult] = useState<InteractionResult | null>(null);
   const [checkLoading, setCheckLoading] = useState(false);
   const [checkError, setCheckError] = useState("");
+  const [checkerSuggestions, setCheckerSuggestions] = useState<string[]>([]);
+  const [showCheckerSug, setShowCheckerSug] = useState(false);
 
   const [scanImg, setScanImg] = useState<string | null>(null);
   const [scanStatus, setScanStatus] = useState("");
@@ -693,7 +695,11 @@ export default function Home() {
   const scanFileRef = useRef<HTMLInputElement>(null);
   const scanGalleryRef = useRef<HTMLInputElement>(null);
   const sugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const checkerSugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
+  const checkerWrapRef = useRef<HTMLDivElement>(null);
+  const queryRef = useRef(query);
+  useEffect(() => { queryRef.current = query; }, [query]);
 
   useEffect(() => {
     try {
@@ -737,11 +743,23 @@ export default function Home() {
     }, 380);
   }, []);
 
+  const fetchCheckerSug = useCallback((q: string) => {
+    if (checkerSugTimer.current) clearTimeout(checkerSugTimer.current);
+    if (q.trim().length < 2) { setCheckerSuggestions([]); return; }
+    checkerSugTimer.current = setTimeout(async () => {
+      try {
+        const r = await fetch("/api/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q }) });
+        const d = await r.json();
+        setCheckerSuggestions(d.suggestions ?? []);
+      } catch { setCheckerSuggestions([]); }
+    }, 380);
+  }, []);
+
   const sortArr = (arr: Medicine[], s: string) =>
     [...arr].sort((a, b) => s === "low" ? a.price - b.price : b.price - a.price);
 
   const searchMed = async (q?: string) => {
-    const qry = (q ?? query).trim();
+    const qry = (q ?? queryRef.current).trim();
     if (!qry) return;
     setLoading(true); setError(""); setResults(null); setShowSug(false); setExpanded(null);
     addHistory(qry);
@@ -749,6 +767,7 @@ export default function Home() {
       const r = await fetch("/api/medicine", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qry, language: lang }) });
       const d = await r.json();
       if (d.error) setError("Something went wrong. Please try again.");
+      else if (!d.results || d.results.length === 0) setError(`No results found for "${qry}". Check the spelling or try a different name.`);
       else setResults(sortArr(d.results, sort));
     } catch { setError("Network error. Please check your connection."); }
     finally { setLoading(false); }
@@ -759,7 +778,10 @@ export default function Home() {
   }, [sort]);
 
   useEffect(() => {
-    const h = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest(".search-wrap")) setShowSug(false); };
+    const h = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".search-wrap")) setShowSug(false);
+      if (!(e.target as HTMLElement).closest(".checker-wrap")) setShowCheckerSug(false);
+    };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
   }, []);
@@ -951,7 +973,7 @@ export default function Home() {
                 <div className="history-section">
                   <div className="section-label">{t.history}</div>
                   <div className="chips-row">
-                    {history.map((h, i) => <button key={i} className="chip" onClick={() => { setQuery(h); searchMed(h); }}>{h}</button>)}
+                    {history.map((h, i) => <button key={i} className="chip" onClick={() => { setQuery(h); queryRef.current = h; searchMed(h); }}>{h}</button>)}
                   </div>
                 </div>
               )}
@@ -961,7 +983,7 @@ export default function Home() {
                   <div className="section-label">{t.saved}</div>
                   <div className="saved-cards">
                     {savedMeds.slice(0, 3).map((m, i) => (
-                      <div key={i} className="saved-card" onClick={() => { setQuery(m.name); searchMed(m.name); }}>
+                      <div key={i} className="saved-card" onClick={() => { setQuery(m.name); queryRef.current = m.name; searchMed(m.name); }}>
                         <div><div className="saved-name">{m.name}</div><div className="saved-meta">{m.salt} · ₹{m.price}</div></div>
                         <button className="unsave-btn" onClick={e => { e.stopPropagation(); toggleSave(m); }}>✕</button>
                       </div>
@@ -982,7 +1004,7 @@ export default function Home() {
                         ? ["জ্বর","মাথাব্যথা","সর্দি","পেটব্যথা","অ্যাসিডিটি"]
                         : ["Fever","Headache","Cold","Stomach pain","Acidity"]
                       ).map((s, i) => (
-                        <button key={i} className="trend-chip symptom-chip" onClick={() => { setQuery(s); searchMed(s); }}>
+                        <button key={i} className="trend-chip symptom-chip" onClick={() => { setQuery(s); queryRef.current = s; searchMed(s); }}>
                           <span className="trend-chip-icon">
                             {i===0 ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
                             : i===1 ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
@@ -1005,7 +1027,7 @@ export default function Home() {
                         ? ["প্যারাসিটামল","অ্যাজিথ্রোমাইসিন","প্যান্টোপ্রাজোল","সেটিরিজিন","মেটফর্মিন"]
                         : ["Paracetamol","Azithromycin","Pantoprazole","Cetirizine","Metformin"]
                       ).map((m, i) => (
-                        <button key={i} className="trend-chip med-chip" onClick={() => { setQuery(m); searchMed(m); }}>
+                        <button key={i} className="trend-chip med-chip" onClick={() => { setQuery(m); queryRef.current = m; searchMed(m); }}>
                           <span className="trend-chip-icon">
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
                           </span>
@@ -1180,12 +1202,22 @@ export default function Home() {
                 <div className="section-title">{t.checkerTitle}</div>
                 <div className="section-sub">{t.checkerSub}</div>
               </div>
-              <div className="add-row">
+              <div className="add-row checker-wrap" style={{ position: "relative" }}>
                 <input className="add-input" placeholder={t.addMedicine} value={checkerInput}
-                  onChange={e => setCheckerInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); } }}
+                  onChange={e => { setCheckerInput(e.target.value); fetchCheckerSug(e.target.value); setShowCheckerSug(true); }}
+                  onFocus={() => { if (checkerSuggestions.length > 0) setShowCheckerSug(true); }}
+                  onKeyDown={e => { if (e.key === "Enter" && checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); setShowCheckerSug(false); setCheckerSuggestions([]); } if (e.key === "Escape") setShowCheckerSug(false); }}
                 />
-                <button className="add-btn" onClick={() => { if (checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); } }}>{t.addBtn}</button>
+                <button className="add-btn" onClick={() => { if (checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); setShowCheckerSug(false); setCheckerSuggestions([]); } }}>{t.addBtn}</button>
+                {showCheckerSug && checkerSuggestions.length > 0 && (
+                  <div className="suggestions" style={{ top: "calc(100% + 4px)" }}>
+                    {checkerSuggestions.map((s, i) => (
+                      <div key={i} className="sug-item" onMouseDown={() => { setCheckerMeds(p => p.includes(s) ? p : [...p, s]); setCheckerInput(""); setShowCheckerSug(false); setCheckerSuggestions([]); }}>
+                        <span className="sug-dot" />{s}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               {checkerMeds.length > 0 && (
                 <div className="med-tags">
