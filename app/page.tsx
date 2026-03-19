@@ -169,10 +169,10 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 }
 .header-left { display: flex; align-items: center; gap: 14px; }
 .logo-ring {
-  width: 70px; height: 70px; flex-shrink: 0;
+  width: 80px; height: 80px; flex-shrink: 0;
   background: none; border: none; box-shadow: none; overflow: visible;
 }
-.logo-ring img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.logo-ring img { width: 100%; height: 100%; object-fit: contain; display: block; transform: scale(1.4); }
 .app-name {
   font-family: 'Instrument Sans', sans-serif;
   font-size: 30px; font-weight: 700; line-height: 1;
