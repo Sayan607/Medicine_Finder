@@ -1399,6 +1399,24 @@ export default function Home() {
         <footer className="footer">
           <div className="footer-inner">
 
+            {/* INSTALL BANNER */}
+            <div style={{
+              background: "linear-gradient(135deg, rgba(13,148,136,0.15), rgba(56,189,248,0.1))",
+              border: "1.5px solid rgba(13,148,136,0.3)",
+              borderRadius: 16, padding: "16px 20px", marginBottom: 32,
+              display: "flex", alignItems: "center", gap: 14
+            }}>
+              <div style={{ fontSize: 28, flexShrink: 0 }}>📲</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: "#fff", marginBottom: 3 }}>
+                  Use MedMind as an App — it's free!
+                </div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.5 }}>
+                  Tap the <strong style={{ color: "rgba(255,255,255,0.85)" }}>⋮ menu</strong> in your browser → <strong style={{ color: "rgba(255,255,255,0.85)" }}>"Add to Home Screen"</strong> — no app store needed.
+                </div>
+              </div>
+            </div>
+
             {/* TOP — branding */}
             <div className="footer-top">
               <div className="footer-logo-wrap">
