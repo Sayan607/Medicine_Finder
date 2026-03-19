@@ -1,31 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: NextRequest) {
-  const { query } = await req.json();
-  if (!query || query.trim().length < 2) return NextResponse.json({ suggestions: [] });
-
-  const prompt = `List up to 6 Indian medicine brand names or salt names that start with or closely match "${query}".
-Return ONLY a raw JSON array of strings. No explanation, no markdown.
-Example: ["Crocin","Calpol","Cetirizine","Combiflam","Cofsils","Cipla"]`;
-
   try {
-    const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.GROQ_API_KEY}` },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", temperature: 0.1, max_tokens: 200,
-        messages: [
-          { role: "system", content: "You suggest Indian medicine names. Respond with only a raw JSON array of strings." },
-          { role: "user", content: prompt }
-        ],
-      }),
+    const { query } = await req.json();
+    if (!query || query.trim().length < 2) return NextResponse.json({ suggestions: [] });
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json", temperature: 0.3 },
     });
-    const data = await r.json();
-    const text = data.choices?.[0]?.message?.content ?? "";
-    const match = text.match(/\[[\s\S]*\]/);
-    if (!match) return NextResponse.json({ suggestions: [] });
-    return NextResponse.json({ suggestions: JSON.parse(match[0]) });
-  } catch {
+
+    const prompt = `The user typed: "${query}". 
+    Suggest 3 to 5 autocomplete strings. These should be common medicine names, salts, or symptoms in India that match the query.
+    Return a JSON object with a single key "suggestions" containing an array of strings.`;
+
+    const result = await model.generateContent(prompt);
+    const parsed = JSON.parse(result.response.text());
+
+    return NextResponse.json({ suggestions: parsed.suggestions || [] });
+  } catch (err) {
+    console.error("Suggest Route Error:", err);
     return NextResponse.json({ suggestions: [] });
   }
 }
