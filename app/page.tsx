@@ -169,7 +169,7 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 }
 .header-left { display: flex; align-items: center; gap: 14px; }
 .logo-ring {
-  width: 52px; height: 52px; flex-shrink: 0;
+  width: 70px; height: 70px; flex-shrink: 0;
   background: none; border: none; box-shadow: none; overflow: visible;
 }
 .logo-ring img { width: 100%; height: 100%; object-fit: contain; display: block; }
