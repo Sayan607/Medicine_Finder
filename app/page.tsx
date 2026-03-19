@@ -156,7 +156,7 @@ body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; colo
   box-shadow: 0 4px 14px rgba(13,148,136,0.3), 0 1px 3px rgba(0,0,0,0.1);
   flex-shrink: 0; overflow: hidden;
 }
-.logo-ring img { width: 38px; height: 38px; object-fit: contain; filter: brightness(10); }
+.logo-ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .title { font-family: 'Playfair Display', serif; font-size: 32px; letter-spacing: -0.5px; color: var(--text); line-height: 1; }
 .subtitle { font-size: 12px; color: var(--text3); margin-top: 4px; font-weight: 400; }
 
@@ -472,15 +472,23 @@ body { background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; colo
 
 /* SCAN */
 .upload-zone {
-  border: 2px dashed var(--border2); border-radius: var(--radius);
-  padding: 40px 20px; text-align: center; cursor: pointer;
-  background: var(--white); transition: all 0.2s; margin-bottom: 16px;
-  box-shadow: var(--shadow);
+  border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 16px; box-shadow: var(--shadow);
 }
-.upload-zone:hover { border-color: var(--teal); background: var(--teal-light); }
-.upload-icon { font-size: 40px; margin-bottom: 12px; }
-.upload-text { font-size: 14px; color: var(--text2); font-weight: 500; margin-bottom: 4px; }
-.upload-sub { font-size: 12px; color: var(--text3); }
+.upload-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.upload-btn-item {
+  padding: 28px 16px; text-align: center; cursor: pointer;
+  background: var(--white); transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  border: 1.5px solid var(--border);
+}
+.upload-btn-item:first-child { border-radius: var(--radius) 0 0 var(--radius); border-right: none; }
+.upload-btn-item:last-child { border-radius: 0 var(--radius) var(--radius) 0; border-left: 1px solid var(--border); }
+.upload-btn-item:hover { background: var(--teal-light); border-color: var(--teal); }
+.upload-btn-item:hover + .upload-btn-item { border-left-color: var(--teal); }
+.upload-icon { font-size: 32px; }
+.upload-text { font-size: 13px; color: var(--text2); font-weight: 600; }
+.upload-sub { font-size: 11px; color: var(--text3); }
 .scan-img-wrap { margin-bottom: 14px; border-radius: 14px; overflow: hidden; border: 1.5px solid var(--teal-border); box-shadow: var(--shadow); }
 .scan-img { width: 100%; max-height: 200px; object-fit: contain; display: block; }
 .scan-status { padding: 10px 16px; font-size: 12.5px; display: flex; align-items: center; gap: 8px; background: var(--white); border-top: 1px solid var(--border); }
@@ -581,6 +589,7 @@ export default function Home() {
 
   const fileRef = useRef<HTMLInputElement>(null);
   const scanFileRef = useRef<HTMLInputElement>(null);
+  const scanGalleryRef = useRef<HTMLInputElement>(null);
   const sugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
 
@@ -956,10 +965,19 @@ export default function Home() {
               <div className="section-title">{t.scanTitle}</div>
               <div className="section-sub">{t.scanSub}</div>
               {!scanImg && (
-                <div className="upload-zone" onClick={() => scanFileRef.current?.click()}>
-                  <div className="upload-icon">📋</div>
-                  <div className="upload-text">{t.uploadBtn}</div>
-                  <div className="upload-sub">{lang === "bn" ? "JPG বা PNG" : "JPG or PNG — clear photo works best"}</div>
+                <div className="upload-zone">
+                  <div className="upload-btns">
+                    <div className="upload-btn-item" onClick={() => scanFileRef.current?.click()}>
+                      <div className="upload-icon">📷</div>
+                      <div className="upload-text">{lang === "bn" ? "ক্যামেরা" : "Camera"}</div>
+                      <div className="upload-sub">{lang === "bn" ? "ছবি তুলুন" : "Take a photo"}</div>
+                    </div>
+                    <div className="upload-btn-item" onClick={() => scanGalleryRef.current?.click()}>
+                      <div className="upload-icon">🖼️</div>
+                      <div className="upload-text">{lang === "bn" ? "গ্যালারি" : "Gallery"}</div>
+                      <div className="upload-sub">{lang === "bn" ? "ফোন থেকে বেছে নিন" : "Choose from phone"}</div>
+                    </div>
+                  </div>
                 </div>
               )}
               {scanImg && (
@@ -970,6 +988,7 @@ export default function Home() {
                 </div>
               )}
               <input ref={scanFileRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={handleScanChange} />
+              <input ref={scanGalleryRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleScanChange} />
               {scanLoading && <div className="loading"><div className="spinner" /><p className="loading-text">{t.scanning}</p></div>}
               {scanMeds && !scanLoading && scanMeds.length === 0 && <div className="empty-state"><div className="empty-icon">📋</div><p className="empty-title">{t.noMeds}</p><p className="empty-sub">{t.noMedsSub}</p></div>}
               {scanMeds && !scanLoading && scanMeds.length > 0 && (
