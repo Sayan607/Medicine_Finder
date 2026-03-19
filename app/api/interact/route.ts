@@ -8,27 +8,32 @@ export async function POST(req: NextRequest) {
 
   const prompt = `You are a clinical pharmacology expert for India. Check interactions between these medicines: ${medicines.join(", ")}.
 
-Return a single JSON object (not array) with ALL these fields:
+Return a single JSON object with ALL these fields:
 
-- overall: ONLY one of: "safe"/"warning"/"dangerous"
-- summary: 1-2 sentence overall summary ${isBengali ? "in Bengali" : ""}
-- safeToTake: boolean
-- advice: what the patient should do ${isBengali ? "in Bengali" : ""} (string)
-- safetyScore: number 1-10 (1=completely safe together, 10=extremely dangerous together)
-- safetyVerdict: ONLY one of: "Safe"/"Caution"/"Avoid"
-- interactionReason: 2-3 sentences explaining WHY these medicines interact or don't ${isBengali ? "in Bengali" : ""} (string)
-- keyPoints: array of 3-5 important highlighted points about this combination ${isBengali ? "in Bengali" : ""} (string[])
-- pairs: array of interaction pairs, each with:
-  - medicines: array of 2 medicine names
-  - severity: "safe"/"warning"/"dangerous"
-  - description: short description ${isBengali ? "in Bengali" : ""}
-  - why: why this interaction happens ${isBengali ? "in Bengali" : ""}
-  - whatToDo: what to do about it ${isBengali ? "in Bengali" : ""}
+{
+  "overall": "safe" or "warning" or "dangerous",
+  "summary": "1-2 sentence overall summary",
+  "safeToTake": true or false,
+  "advice": "what the patient should do",
+  "safetyScore": number from 1 to 10,
+  "safetyVerdict": "Safe" or "Caution" or "Avoid",
+  "interactionReason": "2-3 sentences explaining why",
+  "keyPoints": ["point 1", "point 2", "point 3"],
+  "pairs": [
+    {
+      "medicines": ["medicine1", "medicine2"],
+      "severity": "safe" or "warning" or "dangerous",
+      "description": "short description",
+      "why": "why this interaction happens",
+      "whatToDo": "what to do about it"
+    }
+  ]
+}
 
 Rules:
-- safetyScore 1-3 = Safe (green), 4-6 = Caution (yellow), 7-10 = Avoid (red)
+- safetyScore 1-3 = safe, 4-6 = caution, 7-10 = avoid
 - Be medically accurate for Indian medicine brands
-- Return ONLY raw JSON object. No markdown, no code fences.`;
+- Return ONLY the raw JSON object. No markdown, no code fences, no extra text.`;
 
   try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -39,12 +44,12 @@ Rules:
       },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        temperature: 0.2,
+        temperature: 0.1,
         max_tokens: 2000,
         messages: [
           {
             role: "system",
-            content: "You are a clinical pharmacology expert. Respond with only a raw JSON object.",
+            content: "You are a clinical pharmacology expert. Always respond with only a valid raw JSON object. No markdown, no code fences.",
           },
           { role: "user", content: prompt },
         ],
@@ -53,9 +58,14 @@ Rules:
 
     const data = await r.json();
     const text = data.choices?.[0]?.message?.content ?? "";
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) return NextResponse.json({ error: "No result" });
-    return NextResponse.json(JSON.parse(match[0]));
+
+    // Try to extract JSON object from response
+    const clean = text.replace(/```json|```/g, "").trim();
+    const match = clean.match(/\{[\s\S]*\}/);
+    if (!match) return NextResponse.json({ error: "No result" }, { status: 500 });
+
+    const parsed = JSON.parse(match[0]);
+    return NextResponse.json(parsed);
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

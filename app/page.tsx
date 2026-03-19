@@ -924,9 +924,9 @@ export default function Home() {
                     </span>
                     <input type="text" value={query} placeholder={t.searchPlaceholder} className="search-input"
                       disabled={loading || imgLoading} autoComplete="off" autoCorrect="off" spellCheck={false}
-                      onChange={e => { const v = e.target.value; setQuery(v); if (!v) { setResults(null); setError(""); setSuggestions([]); } else { fetchSug(v); setShowSug(true); } }}
+                      onChange={e => { const v = e.target.value; setQuery(v); queryRef.current = v; if (!v) { setResults(null); setError(""); setSuggestions([]); } else { fetchSug(v); setShowSug(true); } }}
                       onFocus={() => { if (suggestions.length > 0) setShowSug(true); }}
-                      onKeyDown={e => { if (e.key === "Enter") searchMed(); if (e.key === "Escape") setShowSug(false); }}
+                      onKeyDown={e => { if (e.key === "Enter") { const q = queryRef.current; if (q) searchMed(q); } if (e.key === "Escape") setShowSug(false); }}
                     />
                     <button className={`voice-btn${listening ? " listening" : ""}`} onClick={handleVoice} title={lang === "bn" ? "ভয়েস সার্চ" : "Voice search"}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -944,7 +944,7 @@ export default function Home() {
                     }
                   </button>
                   <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={handleImgChange} />
-                  <button className="search-btn" onClick={() => searchMed()} disabled={loading || !query.trim() || imgLoading}>
+                  <button className="search-btn" onClick={() => { const q = queryRef.current; if (q) searchMed(q); }} disabled={loading || !query.trim() || imgLoading}>
                     {loading ? <><span className="btn-spin" />{t.searching}</> : t.searchBtn}
                   </button>
                 </div>
@@ -1210,15 +1210,41 @@ export default function Home() {
               </div>
               <div className="add-row checker-wrap" style={{ position: "relative" }}>
                 <input className="add-input" placeholder={t.addMedicine} value={checkerInput}
-                  onChange={e => { setCheckerInput(e.target.value); fetchCheckerSug(e.target.value); setShowCheckerSug(true); }}
+                  onChange={e => { const v = e.target.value; setCheckerInput(v); if (v.trim().length >= 2) { fetchCheckerSug(v); setShowCheckerSug(true); } else { setCheckerSuggestions([]); setShowCheckerSug(false); } }}
                   onFocus={() => { if (checkerSuggestions.length > 0) setShowCheckerSug(true); }}
-                  onKeyDown={e => { if (e.key === "Enter" && checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); setShowCheckerSug(false); setCheckerSuggestions([]); } if (e.key === "Escape") setShowCheckerSug(false); }}
+                  onKeyDown={e => {
+                    if (e.key === "Enter" && checkerInput.trim()) {
+                      setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]);
+                      setCheckerInput("");
+                      setShowCheckerSug(false);
+                      setCheckerSuggestions([]);
+                      setInteractResult(null);
+                      setCheckError("");
+                    }
+                    if (e.key === "Escape") setShowCheckerSug(false);
+                  }}
                 />
-                <button className="add-btn" onClick={() => { if (checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); setShowCheckerSug(false); setCheckerSuggestions([]); } }}>{t.addBtn}</button>
+                <button className="add-btn" onClick={() => {
+                  if (checkerInput.trim()) {
+                    setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]);
+                    setCheckerInput("");
+                    setShowCheckerSug(false);
+                    setCheckerSuggestions([]);
+                    setInteractResult(null);
+                    setCheckError("");
+                  }
+                }}>{t.addBtn}</button>
                 {showCheckerSug && checkerSuggestions.length > 0 && (
                   <div className="suggestions" style={{ top: "calc(100% + 4px)" }}>
                     {checkerSuggestions.map((s, i) => (
-                      <div key={i} className="sug-item" onMouseDown={() => { setCheckerMeds(p => p.includes(s) ? p : [...p, s]); setCheckerInput(""); setShowCheckerSug(false); setCheckerSuggestions([]); }}>
+                      <div key={i} className="sug-item" onMouseDown={() => {
+                        setCheckerMeds(p => p.includes(s) ? p : [...p, s]);
+                        setCheckerInput("");
+                        setShowCheckerSug(false);
+                        setCheckerSuggestions([]);
+                        setInteractResult(null);
+                        setCheckError("");
+                      }}>
                         <span className="sug-dot" />{s}
                       </div>
                     ))}
