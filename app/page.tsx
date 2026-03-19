@@ -172,10 +172,10 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
   width: 62px; height: 62px; border-radius: 50%;
   overflow: hidden; flex-shrink: 0;
   box-shadow: 0 4px 14px rgba(13,148,136,0.25), 0 1px 4px rgba(0,0,0,0.1);
-  border: 2px solid rgba(13,148,136,0.2);
-  background: #fff;
+  border: 2px solid rgba(13,148,136,0.3);
+  background: #e0f7f5;
 }
-.logo-ring img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 6px; }
+.logo-ring img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .app-name {
   font-family: 'Instrument Sans', sans-serif;
   font-size: 30px; font-weight: 700; line-height: 1;
