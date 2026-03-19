@@ -11,6 +11,10 @@ type Medicine = {
   sideEffects: string[];
   warnings: { pregnancy: string; children: string; elderly: string };
   interactions: string[];
+  safetyScore?: number;
+  safetyVerdict?: string;
+  interactionReason?: string;
+  keyPoints?: string[];
 };
 
 type InteractionResult = {
@@ -609,6 +613,33 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .footer-copy { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; }
 .footer-made-with { font-size: 11.5px; color: rgba(255,255,255,0.35); display: flex; align-items: center; gap: 4px; }
 
+/* ── CAUTION SCALE ── */
+.caution-scale { border-radius: 14px; border: 1.5px solid; padding: 14px 16px; margin-top: 14px; }
+.caution-scale.green { background: #ecfdf5; border-color: #6ee7b7; }
+.caution-scale.yellow { background: #fffbeb; border-color: #fcd34d; }
+.caution-scale.red { background: #fef2f2; border-color: #fca5a5; }
+.caution-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.caution-verdict { font-size: 14px; font-weight: 700; }
+.caution-score { font-size: 20px; font-weight: 800; }
+.caution-scale.green .caution-verdict, .caution-scale.green .caution-score { color: #065f46; }
+.caution-scale.yellow .caution-verdict, .caution-scale.yellow .caution-score { color: #92400e; }
+.caution-scale.red .caution-verdict, .caution-scale.red .caution-score { color: #991b1b; }
+.caution-bar-wrap { width: 100%; height: 10px; background: #e5e7eb; border-radius: 99px; margin-bottom: 4px; }
+.caution-bar-fill { height: 10px; border-radius: 99px; transition: width 0.4s ease; }
+.caution-scale.green .caution-bar-fill { background: #10b981; }
+.caution-scale.yellow .caution-bar-fill { background: #f59e0b; }
+.caution-scale.red .caution-bar-fill { background: #ef4444; }
+.caution-ticks { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.caution-tick { font-size: 9px; color: #9ca3af; }
+.caution-legend { display: flex; gap: 10px; margin-bottom: 10px; }
+.caution-legend span { font-size: 11px; }
+.caution-reason { font-size: 12.5px; color: #374151; line-height: 1.5; margin-bottom: 10px; }
+.caution-points { display: flex; flex-direction: column; gap: 5px; }
+.caution-point { font-size: 12.5px; font-weight: 600; display: flex; gap: 6px; }
+.caution-scale.green .caution-point { color: #065f46; }
+.caution-scale.yellow .caution-point { color: #92400e; }
+.caution-scale.red .caution-point { color: #991b1b; }
+
 /* ── MOBILE ── */
 @media (max-width: 480px) {
   .main-content { padding: 28px 14px 0; }
@@ -1075,6 +1106,45 @@ export default function Home() {
                                 )}
                                 <div><div className="info-label">{t.form}</div><div className="info-value">{m.type}</div></div>
                                 <div><div className="info-label">{t.manufacturer}</div><div className="info-value">{m.manufacturer}</div></div>
+                                {m.safetyScore !== undefined && (
+                                  <div className="info-full">
+                                    <div className="info-label">Safety Rating</div>
+                                    {(() => {
+                                      const score = m.safetyScore!;
+                                      const color = score <= 3 ? "green" : score <= 6 ? "yellow" : "red";
+                                      const emoji = score <= 3 ? "✅" : score <= 6 ? "⚠️" : "🚫";
+                                      return (
+                                        <div className={`caution-scale ${color}`}>
+                                          <div className="caution-header">
+                                            <span className="caution-verdict">{emoji} {m.safetyVerdict ?? "Unknown"}</span>
+                                            <span className="caution-score">{score}/10</span>
+                                          </div>
+                                          <div className="caution-bar-wrap">
+                                            <div className="caution-bar-fill" style={{ width: `${score * 10}%` }} />
+                                          </div>
+                                          <div className="caution-ticks">
+                                            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                                              <span key={n} className="caution-tick" style={{ fontWeight: n === score ? 800 : 400 }}>{n}</span>
+                                            ))}
+                                          </div>
+                                          <div className="caution-legend">
+                                            <span style={{ color: "#16a34a" }}>● 1–3 Safe</span>
+                                            <span style={{ color: "#d97706" }}>● 4–6 Caution</span>
+                                            <span style={{ color: "#dc2626" }}>● 7–10 Avoid</span>
+                                          </div>
+                                          {m.interactionReason && <p className="caution-reason">{m.interactionReason}</p>}
+                                          {m.keyPoints && m.keyPoints.length > 0 && (
+                                            <div className="caution-points">
+                                              {m.keyPoints.map((pt, k) => (
+                                                <div key={k} className="caution-point"><span>•</span><span>{pt}</span></div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <div className="card-actions">
