@@ -997,16 +997,42 @@ export default function Home() {
                   <div className="scan-cards">
                     {scanMeds.map((m, i) => (
                       <div key={i} className="scan-card">
-                        <div className="scan-med-name">💊 {m.name} {m.dosage && `· ${m.dosage}`}</div>
-                        <div className="scan-meta">
-                          {m.whenToEat && <div className="scan-field"><div className="scan-field-label">{t.whenToEat}</div><span className="scan-when-pill">🍽 {m.whenToEat}</span></div>}
-                          {m.frequency && <div className="scan-field"><div className="scan-field-label">{t.frequency}</div><div className="scan-field-value">{m.frequency}</div></div>}
-                          {m.duration && <div className="scan-field"><div className="scan-field-label">{t.duration}</div><div className="scan-field-value">{m.duration}</div></div>}
-                          {m.instructions && <div className="scan-field" style={{ gridColumn: "1/-1" }}><div className="scan-field-label">{t.instructions}</div><div className="scan-field-value">{m.instructions}</div></div>}
+                        {/* Medicine name + dosage */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                          <div className="scan-med-name">💊 {m.name}</div>
+                          {m.dosage && <span style={{ fontSize: 13, fontWeight: 600, color: "var(--teal)", background: "var(--teal-light)", border: "1.5px solid var(--teal-border)", borderRadius: 8, padding: "3px 10px" }}>{m.dosage}</span>}
                         </div>
-                        <div style={{ marginTop: 12 }}>
-                          <button className="action-btn" onClick={() => { setQuery(m.name); setTab("search"); searchMed(m.name); }}>🔍 {lang === "bn" ? "বিস্তারিত দেখুন" : "View details & price"}</button>
+
+                        {/* Key info pills row */}
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+                          {m.whenToEat && m.whenToEat !== "Not specified" && (
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, fontSize: 12.5, fontWeight: 600, background: "var(--teal-light)", color: "var(--teal)", border: "1.5px solid var(--teal-border)" }}>
+                              🍽 {m.whenToEat}
+                            </span>
+                          )}
+                          {m.frequency && (
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, fontSize: 12.5, fontWeight: 600, background: "#f0f4ff", color: "#3730a3", border: "1.5px solid #c7d2fe" }}>
+                              🕐 {m.frequency}
+                            </span>
+                          )}
+                          {m.duration && (
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 20, fontSize: 12.5, fontWeight: 600, background: "#fff7ed", color: "#9a3412", border: "1.5px solid #fed7aa" }}>
+                              📅 {m.duration}
+                            </span>
+                          )}
                         </div>
+
+                        {/* Instructions if any */}
+                        {m.instructions && (
+                          <div style={{ padding: "9px 12px", borderRadius: 10, background: "var(--bg2)", border: "1px solid var(--border)", fontSize: 12.5, color: "var(--text2)", marginBottom: 12 }}>
+                            📌 {m.instructions}
+                          </div>
+                        )}
+
+                        {/* Search for price link */}
+                        <button className="action-btn" style={{ fontSize: 12 }} onClick={() => { setQuery(m.name); setTab("search"); searchMed(m.name); }}>
+                          🔍 {lang === "bn" ? "দাম ও বিকল্প দেখুন" : "Find price & alternatives"}
+                        </button>
                       </div>
                     ))}
                   </div>
