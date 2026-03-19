@@ -167,15 +167,19 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 28px; gap: 12px;
 }
-.header-left { display: flex; align-items: center; gap: 14px; }
+.header-left { display: flex; align-items: center; gap: 6px; }
 .logo-ring {
-  width: 80px; height: 80px; flex-shrink: 0;
+  width: 72px; height: 72px; flex-shrink: 0;
   background: none; border: none; box-shadow: none; overflow: visible;
+  display: flex; align-items: center; justify-content: center;
 }
-.logo-ring img { width: 100%; height: 100%; object-fit: contain; display: block; transform: scale(1.4); }
+.logo-ring img {
+  width: 110%; height: 110%; object-fit: contain; display: block;
+  transform: scale(2.2); transform-origin: center center;
+}
 .app-name {
   font-family: 'Instrument Sans', sans-serif;
-  font-size: 30px; font-weight: 700; line-height: 1;
+  font-size: 34px; font-weight: 700; line-height: 1;
   letter-spacing: -0.5px;
 }
 .app-name-med { color: #38bdf8; }
