@@ -170,11 +170,12 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .header-left { display: flex; align-items: center; gap: 6px; }
 .logo-ring {
   width: 72px; height: 72px; flex-shrink: 0;
-  background: none; border: none; box-shadow: none; overflow: visible;
+  background: none; border: none; box-shadow: none;
   display: flex; align-items: center; justify-content: center;
+  overflow: visible;
 }
 .logo-ring img {
-  width: 110%; height: 110%; object-fit: contain; display: block;
+  width: 100%; height: 100%; object-fit: contain; display: block;
   transform: scale(2.2); transform-origin: center center;
 }
 .app-name {
@@ -994,7 +995,7 @@ export default function Home() {
 
               {!loading && results === null && !error && (
                 <div style={{ textAlign: "center", padding: "40px 0 20px" }}>
-                  <div style={{ fontSize: 38, marginBottom: 14, opacity: 0.25 }}>
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: 14, opacity: 0.25 }}>
                     <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
                   </div>
                   <p style={{ fontSize: 15, fontWeight: 600, color: "var(--text2)", marginBottom: 5 }}>{t.initialTitle}</p>
