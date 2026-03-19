@@ -1,41 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { medicines, language } = await req.json();
-  if (!medicines || medicines.length < 2) return NextResponse.json({ error: "Need at least 2 medicines" });
+  try {
+    const body = await req.json();
+    const { medicines, language } = body;
 
-  const isBengali = language === "bn";
+    if (!medicines || medicines.length < 2) {
+      return NextResponse.json({ error: "Need at least 2 medicines" }, { status: 400 });
+    }
 
-  const prompt = `You are a clinical pharmacology expert for India. Check interactions between these medicines: ${medicines.join(", ")}.
+    const isBengali = language === "bn";
 
-Return a single JSON object with ALL these fields:
+    const prompt = `You are a clinical pharmacology expert for India. Check interactions between: ${medicines.join(", ")}.
 
+Respond with ONLY this exact JSON structure:
 {
-  "overall": "safe" or "warning" or "dangerous",
-  "summary": "1-2 sentence overall summary",
-  "safeToTake": true or false,
-  "advice": "what the patient should do",
-  "safetyScore": number from 1 to 10,
-  "safetyVerdict": "Safe" or "Caution" or "Avoid",
-  "interactionReason": "2-3 sentences explaining why",
+  "overall": "safe",
+  "summary": "brief summary here",
+  "safeToTake": true,
+  "advice": "advice here",
+  "safetyScore": 2,
+  "safetyVerdict": "Safe",
+  "interactionReason": "reason here",
   "keyPoints": ["point 1", "point 2", "point 3"],
   "pairs": [
     {
-      "medicines": ["medicine1", "medicine2"],
-      "severity": "safe" or "warning" or "dangerous",
-      "description": "short description",
-      "why": "why this interaction happens",
-      "whatToDo": "what to do about it"
+      "medicines": ["med1", "med2"],
+      "severity": "safe",
+      "description": "description here",
+      "why": "why here",
+      "whatToDo": "what to do here"
     }
   ]
 }
 
 Rules:
-- safetyScore 1-3 = safe, 4-6 = caution, 7-10 = avoid
-- Be medically accurate for Indian medicine brands
-- Return ONLY the raw JSON object. No markdown, no code fences, no extra text.`;
+- overall must be exactly: "safe" or "warning" or "dangerous"
+- safetyVerdict must be exactly: "Safe" or "Caution" or "Avoid"  
+- safetyScore: 1-3 safe, 4-6 caution, 7-10 avoid
+- ${isBengali ? "Write summary, advice, interactionReason, keyPoints, description, why, whatToDo in Bengali" : "Write all text fields in English"}
+- Return ONLY a valid JSON object. No markdown, no code fences.`;
 
-  try {
     const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -45,29 +50,36 @@ Rules:
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         temperature: 0.1,
-        max_tokens: 2000,
+        max_tokens: 1500,
+        response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
-            content: "You are a clinical pharmacology expert. Always respond with only a valid raw JSON object. No markdown, no code fences.",
+            content: "You are a pharmacology expert. Respond with ONLY a valid JSON object.",
           },
           { role: "user", content: prompt },
         ],
       }),
     });
 
+    if (!r.ok) {
+      const errData = await r.json().catch(() => ({}));
+      console.error("Groq API error:", r.status, errData);
+      
+      if (r.status === 429) {
+        return NextResponse.json({ error: "Rate limit reached. Please wait a moment before checking again." }, { status: 429 });
+      }
+      return NextResponse.json({ error: `API Error: ${r.statusText}` }, { status: r.status });
+    }
+
     const data = await r.json();
-    const text = data.choices?.[0]?.message?.content ?? "";
-
-    // Try to extract JSON object from response
-    const clean = text.replace(/```json|```/g, "").trim();
-    const match = clean.match(/\{[\s\S]*\}/);
-    if (!match) return NextResponse.json({ error: "No result" }, { status: 500 });
-
-    const parsed = JSON.parse(match[0]);
+    const raw = data.choices?.[0]?.message?.content ?? "{}";
+    const parsed = JSON.parse(raw);
+    
     return NextResponse.json(parsed);
+
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Failed" }, { status: 500 });
+    console.error("Interact route error:", err);
+    return NextResponse.json({ error: "Failed to process interaction." }, { status: 500 });
   }
 }
