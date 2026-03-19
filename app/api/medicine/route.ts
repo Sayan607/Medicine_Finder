@@ -2,13 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { query, language } = await req.json();
+
   if (!query || query.trim().length < 2) return NextResponse.json({ results: [] });
+
   const isBengali = language === "bn";
 
   const prompt = `You are a comprehensive medicine database for India. User searched: "${query}".
+
 This could be a brand name, salt/generic name, symptom, or disease.
 
+SPELLING TOLERANCE RULES:
+- If the query has 1-2 spelling mistakes but clearly refers to a real medicine, treat it as that medicine. Example: "Parcetamol" = "Paracetamol", "Atorvasttin" = "Atorvastatin", "Pantoprazol" = "Pantoprazole"
+- Only return empty array [] if the query is completely unrecognizable as any medicine, salt, symptom or disease
+- Always try your best to match to the closest real Indian medicine
+
 Return a JSON array of up to 8 matching Indian medicines. Each object must have ALL fields:
+
 - name: brand name (string)
 - salt: active ingredient (string)
 - manufacturer: Indian company name (string)
@@ -20,11 +29,16 @@ Return a JSON array of up to 8 matching Indian medicines. Each object must have 
 - sideEffects: array of 3-5 common side effects ${isBengali ? "in Bengali" : ""} (string[])
 - warnings: { pregnancy: string, children: string, elderly: string } ${isBengali ? "in Bengali" : ""}
 - interactions: array of 2-4 medicines/substances to avoid (string[])
+- safetyScore: number from 1-10 (1=completely safe, 10=extremely dangerous) (number)
+- safetyVerdict: ONLY one of: "Safe"/"Caution"/"Avoid" (string)
+- interactionReason: 2-3 sentences explaining why it is safe or unsafe to take ${isBengali ? "in Bengali" : ""} (string)
+- keyPoints: array of 3-5 highlighted main points about safety or caution ${isBengali ? "in Bengali" : ""} (string[])
 
 Rules:
 - If query is symptom/disease, return relevant medicines for that condition
 - Prioritize exact match first, then same-salt cheaper alternatives
 - Use realistic Indian MRP prices
+- safetyScore 1-3 = green (safe), 4-6 = yellow (caution), 7-10 = red (avoid)
 - Return ONLY raw JSON array. No markdown, no code fences.`;
 
   try {
@@ -34,11 +48,12 @@ Rules:
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile", temperature: 0.2, max_tokens: 3000,
         messages: [
-          { role: "system", content: "You are a medicine database for India. Respond with only a raw JSON array." },
+          { role: "system", content: "You are a medicine database for India. Always try to match misspelled queries to the closest real medicine. Respond with only a raw JSON array." },
           { role: "user", content: prompt }
         ],
       }),
     });
+
     const data = await r.json();
     const text = data.choices?.[0]?.message?.content ?? "";
     const match = text.match(/\[[\s\S]*\]/);

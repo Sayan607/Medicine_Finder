@@ -767,8 +767,7 @@ export default function Home() {
       const r = await fetch("/api/medicine", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qry, language: lang }) });
       const d = await r.json();
       if (d.error) setError("Something went wrong. Please try again.");
-      else if (!d.results || d.results.length === 0) setError(`No results found for "${qry}". Check the spelling or try a different name.`);
-      else setResults(sortArr(d.results, sort));
+      else setResults(sortArr(d.results ?? [], sort));
     } catch { setError("Network error. Please check your connection."); }
     finally { setLoading(false); }
   };
@@ -1060,7 +1059,14 @@ export default function Home() {
               {loading && <div className="loading"><div className="spinner" /><p className="loading-text">{t.findingPrices}</p></div>}
               {error && <div className="error-box">⚠️ {error}</div>}
               {!loading && results !== null && results.length === 0 && !error && (
-                <div className="empty-state"><div className="empty-icon">🔍</div><p className="empty-title">{t.noResults}</p><p className="empty-sub">{t.noResultsSub}</p></div>
+                <div className="empty-state">
+                  <div className="empty-icon">🔍</div>
+                  <p className="empty-title">{t.noResults}</p>
+                  <p className="empty-sub">{t.noResultsSub}</p>
+                  <div style={{ marginTop: 14, padding: "10px 16px", borderRadius: 10, background: "var(--gold-light)", border: "1px solid var(--gold-border)", fontSize: 12.5, color: "var(--gold)", lineHeight: 1.5 }}>
+                    💡 {lang === "bn" ? "বানান পরীক্ষা করুন বা ভিন্ন নামে খুঁজুন — যেমন ব্র্যান্ড নামের বদলে সল্ট নাম দিয়ে" : "Try checking your spelling, or search by salt/generic name instead of brand name"}
+                  </div>
+                </div>
               )}
 
               {!loading && results !== null && results.length > 0 && (
@@ -1222,7 +1228,7 @@ export default function Home() {
               {checkerMeds.length > 0 && (
                 <div className="med-tags">
                   {checkerMeds.map((m, i) => (
-                    <div key={i} className="med-tag">{m}<span className="med-tag-x" onClick={() => setCheckerMeds(p => p.filter((_,j) => j !== i))}>✕</span></div>
+                    <div key={i} className="med-tag">{m}<span className="med-tag-x" onClick={() => { setCheckerMeds(p => p.filter((_,j) => j !== i)); setInteractResult(null); setCheckError(""); }}>✕</span></div>
                   ))}
                 </div>
               )}
