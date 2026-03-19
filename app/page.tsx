@@ -1,21 +1,26 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
+import CautionScale from "./components/cautionscale";
 
 type Lang = "en" | "bn";
 type Tab = "search" | "checker" | "scan";
 type Safety = "safe" | "warning" | "dangerous";
+
 type Medicine = {
   name: string; salt: string; manufacturer: string; price: number; type: string;
-  uses: string; dosage: string;
-  whenToEat: string;
+  uses: string; dosage: string; whenToEat: string;
   sideEffects: string[];
   warnings: { pregnancy: string; children: string; elderly: string };
   interactions: string[];
 };
+
 type InteractionResult = {
   overall: Safety; summary: string; safeToTake: boolean; advice: string;
-  pairs: Array<{ medicines: string[]; severity: Safety;
-  description: string; why: string; whatToDo: string }>;
+  safetyScore?: number;
+  safetyVerdict?: string;
+  interactionReason?: string;
+  keyPoints?: string[];
+  pairs: Array<{ medicines: string[]; severity: Safety; description: string; why: string; whatToDo: string }>;
 };
 
 type PrescriptionMed = {
@@ -559,10 +564,20 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .empty-sub { font-size: 13px; color: var(--text3); }
 .error-box { padding: 14px 18px; border-radius: 12px; background: var(--danger-bg); border: 1.5px solid var(--danger-border); font-size: 13px; color: var(--danger); text-align: center; font-weight: 500; }
 
+/* ── PWA BANNER ── */
+.pwa-banner {
+  background: #0f172a; color: #fff; margin: 30px 16px 0; padding: 18px; border-radius: 16px;
+  display: flex; align-items: center; gap: 16px; border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.pwa-icon { font-size: 26px; flex-shrink: 0; }
+.pwa-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: #fff; }
+.pwa-desc { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+
 /* ── FOOTER ── */
 .footer {
   width: 100%; background: #1a1714; color: rgba(255,255,255,0.85);
-  margin-top: 64px; padding: 48px 20px 32px;
+  margin-top: 40px; padding: 48px 20px 32px;
   display: flex; flex-direction: column; align-items: center;
 }
 .footer-inner { width: 100%; max-width: 640px; }
@@ -701,20 +716,11 @@ export default function Home() {
 
     setLoading(true); setError(""); setResults(null); setShowSug(false); setExpanded(null);
     addHistory(qry);
-    
     try {
-      const r = await fetch("/api/medicine", { 
-        method: "POST", 
-        headers: { "Content-Type": "application/json" }, 
-        body: JSON.stringify({ query: qry, language: lang }),
-        cache: "no-store" 
-      });
-      
+      const r = await fetch("/api/medicine", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qry, language: lang }) });
       const d = await r.json();
-      
-      if (d.error) setError(d.error);
-      else setResults(sortArr(d.results || [], sort));
-      
+      if (d.error) setError("Something went wrong. Please try again.");
+      else setResults(sortArr(d.results, sort));
     } catch { setError("Network error. Please check your connection."); }
     finally { setLoading(false); }
   };
@@ -753,12 +759,9 @@ export default function Home() {
       try {
         const r = await fetch("/api/identify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageBase64: url.split(",")[1], mimeType: file.type, language: lang }) });
         const d = await r.json();
-        if (d.medicineName) { setImgStatus(`Identified: ${d.medicineName}`); setImgStatusType("success"); setQuery(d.medicineName); await searchMed(d.medicineName);
-        }
-        else { setImgStatus("Couldn't identify. Try a clearer photo."); setImgStatusType("error");
-        }
-      } catch { setImgStatus("Error identifying."); setImgStatusType("error");
-      }
+        if (d.medicineName) { setImgStatus(`Identified: ${d.medicineName}`); setImgStatusType("success"); setQuery(d.medicineName); await searchMed(d.medicineName); }
+        else { setImgStatus("Couldn't identify. Try a clearer photo."); setImgStatusType("error"); }
+      } catch { setImgStatus("Error identifying."); setImgStatusType("error"); }
       finally { setImgLoading(false); }
     };
     reader.readAsDataURL(file); e.target.value = "";
@@ -779,10 +782,8 @@ export default function Home() {
           setScanMeds(d.medicines);
           setScanStatus(`${d.medicines.length} ${lang === "bn" ? "টি ওষুধ পাওয়া গেছে" : "medicines found"}`);
           setScanStatusType("success");
-        } else { setScanStatus(lang === "bn" ? "কোনো ওষুধ পাওয়া যায়নি" : "No medicines found — try a clearer photo");
-        setScanStatusType("error"); }
-      } catch { setScanStatus("Error reading prescription."); setScanStatusType("error");
-      }
+        } else { setScanStatus(lang === "bn" ? "কোনো ওষুধ পাওয়া যায়নি" : "No medicines found — try a clearer photo"); setScanStatusType("error"); }
+      } catch { setScanStatus("Error reading prescription."); setScanStatusType("error"); }
       finally { setScanLoading(false); }
     };
     reader.readAsDataURL(file); e.target.value = "";
@@ -792,21 +793,11 @@ export default function Home() {
     const meds = overrideMeds ?? checkerMeds;
     if (meds.length < 2) return;
     if (overrideMeds) setCheckerMeds(overrideMeds);
-    
     setCheckLoading(true); setCheckError(""); setInteractResult(null); setTab("checker");
-    
     try {
-      const r = await fetch("/api/interact", { 
-        method: "POST", 
-        headers: { "Content-Type": "application/json" }, 
-        body: JSON.stringify({ medicines: meds, language: lang }),
-        cache: "no-store"
-      });
-      
+      const r = await fetch("/api/interact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ medicines: meds, language: lang }) });
       const d = await r.json();
-      
-      if (d.error) setCheckError(d.error); else setInteractResult(d);
-      
+      if (d.error) setCheckError("Failed to check interactions."); else setInteractResult(d);
     } catch { setCheckError("Network error."); }
     finally { setCheckLoading(false); }
   };
@@ -815,8 +806,7 @@ export default function Home() {
     const text = `💊 ${m.name} (${m.salt})\n💰 ₹${m.price} — ${m.type}\n🏭 ${m.manufacturer}\n📋 ${m.uses}\n⏰ ${m.whenToEat}\n\nFound on MedMind — India's smartest medicine companion`;
     try {
       if (navigator.share) await navigator.share({ title: "MedMind", text });
-      else { await navigator.clipboard.writeText(text); setCopied(i);
-      setTimeout(() => setCopied(null), 2000); }
+      else { await navigator.clipboard.writeText(text); setCopied(i); setTimeout(() => setCopied(null), 2000); }
     } catch {}
   };
 
@@ -1161,8 +1151,19 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="interact-body">
+                    
+                    {/* 👇 YOUR NEW CAUTION SCALE IS INTEGRATED HERE 👇 */}
+                    {interactResult.safetyScore !== undefined && interactResult.safetyVerdict && (
+                      <CautionScale 
+                        score={interactResult.safetyScore}
+                        verdict={interactResult.safetyVerdict}
+                        reason={interactResult.interactionReason || interactResult.summary}
+                        keyPoints={interactResult.keyPoints || []}
+                      />
+                    )}
+
                     {interactResult.pairs?.length > 0 && (
-                      <div className="interact-pairs">
+                      <div className="interact-pairs" style={{ marginTop: '16px' }}>
                         {interactResult.pairs.map((p, i) => (
                           <div key={i} className={`pair-card ${p.severity}`}>
                             <div className={`pair-sev ${p.severity}`}>
@@ -1297,7 +1298,18 @@ export default function Home() {
             </div>
           )}
 
-          <div style={{ height: 64 }} />
+          <div style={{ height: 24 }} />
+        </div>
+        
+        {/* 👇 NEW PWA ADD TO HOME SCREEN BANNER 👇 */}
+        <div className="pwa-banner" style={{ maxWidth: '640px', width: '100%' }}>
+          <div className="pwa-icon">📲</div>
+          <div>
+            <div className="pwa-title">Use MedMind as an App — it's free!</div>
+            <div className="pwa-desc">
+              Tap the <strong style={{fontSize: 14}}>⋮</strong> menu in your browser → <strong>"Add to Home Screen"</strong> — no app store needed.
+            </div>
+          </div>
         </div>
 
         {/* ══ FOOTER ══ */}
