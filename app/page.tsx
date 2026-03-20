@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect, useCallback } from "react";
-import CautionScale from "./components/cautionscale";
 
 type Lang = "en" | "bn";
 type Tab = "search" | "checker" | "scan";
@@ -12,14 +11,16 @@ type Medicine = {
   sideEffects: string[];
   warnings: { pregnancy: string; children: string; elderly: string };
   interactions: string[];
-};
-
-type InteractionResult = {
-  overall: Safety; summary: string; safeToTake: boolean; advice: string;
   safetyScore?: number;
   safetyVerdict?: string;
   interactionReason?: string;
   keyPoints?: string[];
+};
+
+type InteractionResult = {
+  overall: Safety; summary: string; safeToTake: boolean; advice: string;
+  safetyScore?: number; safetyVerdict?: string;
+  interactionReason?: string; keyPoints?: string[];
   pairs: Array<{ medicines: string[]; severity: Safety; description: string; why: string; whatToDo: string }>;
 };
 
@@ -140,14 +141,12 @@ const CSS = `
   --gold-border: #fcd34d;
   --safe: #065f46; --safe-bg: #ecfdf5; --safe-border: #6ee7b7;
   --warn: #92400e; --warn-bg: #fffbeb; --warn-border: #fcd34d;
-  --danger: #991b1b; --danger-bg: #fef2f2;
-  --danger-border: #fca5a5;
+  --danger: #991b1b; --danger-bg: #fef2f2; --danger-border: #fca5a5;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.04);
   --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.04), 0 10px 30px rgba(0,0,0,0.08);
   --shadow-lg: 0 8px 16px rgba(0,0,0,0.05), 0 24px 48px rgba(0,0,0,0.1);
-  --radius: 18px;
-  --radius-sm: 10px;
+  --radius: 18px; --radius-sm: 10px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -261,7 +260,8 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
   height: 52px; padding: 0 20px; border-radius: 14px;
   background: var(--teal); border: none; color: #fff;
   font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 600;
-  cursor: pointer; box-shadow: 0 4px 14px rgba(13,148,136,0.3); transition: all 0.2s; white-space: nowrap;
+  cursor: pointer; box-shadow: 0 4px 14px rgba(13,148,136,0.3);
+  transition: all 0.2s; white-space: nowrap;
   display: flex; align-items: center; gap: 7px; flex-shrink: 0;
 }
 .search-btn:hover:not(:disabled) { background: var(--teal2); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(13,148,136,0.35); }
@@ -304,15 +304,21 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 }
 .trending-chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
 .trend-chip {
-  display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 20px; font-size: 12px; font-weight: 500;
-  cursor: pointer; transition: all 0.15s; border: 1.5px solid; font-family: 'Instrument Sans', sans-serif; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; border: 1.5px solid;
+  font-family: 'Instrument Sans', sans-serif; white-space: nowrap;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .trend-chip-icon { display: flex; align-items: center; opacity: 0.7; }
-.symptom-chip { background: var(--teal-light); border-color: var(--teal-border); color: var(--teal); }
+.symptom-chip {
+  background: var(--teal-light); border-color: var(--teal-border); color: var(--teal);
+}
 .symptom-chip:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
 .symptom-chip:hover .trend-chip-icon { opacity: 1; }
-.med-chip { background: var(--white); border-color: var(--border2); color: var(--text2); }
+.med-chip {
+  background: var(--white); border-color: var(--border2); color: var(--text2);
+}
 .med-chip:hover { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
 
 /* ── HISTORY / CHIPS ── */
@@ -330,7 +336,8 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 
 /* ── IMAGE PREVIEW ── */
 .img-wrap {
-  margin-bottom: 12px; border-radius: 14px; overflow: hidden; border: 1.5px solid var(--teal-border); position: relative;
+  margin-bottom: 12px; border-radius: 14px; overflow: hidden;
+  border: 1.5px solid var(--teal-border); position: relative;
   background: var(--teal-light); box-shadow: var(--shadow);
 }
 .img-prev { width: 100%; max-height: 160px; object-fit: contain; display: block; }
@@ -375,7 +382,8 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .card {
   border-radius: var(--radius); background: var(--white);
   border: 1.5px solid var(--border); overflow: hidden;
-  box-shadow: var(--shadow); animation: slideUp 0.3s ease both; transition: box-shadow 0.2s, border-color 0.2s;
+  box-shadow: var(--shadow); animation: slideUp 0.3s ease both;
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 .card:hover { box-shadow: var(--shadow-md); }
 .card.cheapest { border-color: var(--teal); border-width: 2px; }
@@ -460,7 +468,8 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .check-btn {
   width: 100%; height: 52px; border-radius: 14px; font-size: 14px; font-weight: 700;
   background: var(--teal); border: none; color: #fff; cursor: pointer;
-  font-family: 'Instrument Sans', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: 'Instrument Sans', sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
   box-shadow: 0 4px 14px rgba(13,148,136,0.3); transition: all 0.2s; margin-bottom: 18px;
 }
 .check-btn:hover:not(:disabled) { background: var(--teal2); transform: translateY(-1px); }
@@ -564,20 +573,10 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .empty-sub { font-size: 13px; color: var(--text3); }
 .error-box { padding: 14px 18px; border-radius: 12px; background: var(--danger-bg); border: 1.5px solid var(--danger-border); font-size: 13px; color: var(--danger); text-align: center; font-weight: 500; }
 
-/* ── PWA BANNER ── */
-.pwa-banner {
-  background: #0f172a; color: #fff; margin: 30px 16px 0; padding: 18px; border-radius: 16px;
-  display: flex; align-items: center; gap: 16px; border: 1px solid rgba(255,255,255,0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-.pwa-icon { font-size: 26px; flex-shrink: 0; }
-.pwa-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: #fff; }
-.pwa-desc { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.5; }
-
 /* ── FOOTER ── */
 .footer {
   width: 100%; background: #1a1714; color: rgba(255,255,255,0.85);
-  margin-top: 40px; padding: 48px 20px 32px;
+  margin-top: 64px; padding: 48px 20px 32px;
   display: flex; flex-direction: column; align-items: center;
 }
 .footer-inner { width: 100%; max-width: 640px; }
@@ -586,9 +585,12 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .footer-logo-img {
   width: 44px; height: 44px; border-radius: 50%;
   overflow: hidden; border: 2px solid rgba(255,255,255,0.15);
-  background: #fff; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  background: #fff; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
 }
-.footer-logo-img img { width: 90%; height: 90%; object-fit: contain; display: block; }
+.footer-logo-img img {
+  width: 90%; height: 90%; object-fit: contain; display: block;
+}
 .footer-app-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; }
 .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
 .footer-desc { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 440px; }
@@ -613,6 +615,33 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .footer-copy { font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; }
 .footer-made-with { font-size: 11.5px; color: rgba(255,255,255,0.35); display: flex; align-items: center; gap: 4px; }
 
+/* ── CAUTION SCALE ── */
+.caution-scale { border-radius: 14px; border: 1.5px solid; padding: 14px 16px; margin-top: 14px; }
+.caution-scale.green { background: #ecfdf5; border-color: #6ee7b7; }
+.caution-scale.yellow { background: #fffbeb; border-color: #fcd34d; }
+.caution-scale.red { background: #fef2f2; border-color: #fca5a5; }
+.caution-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.caution-verdict { font-size: 14px; font-weight: 700; }
+.caution-score { font-size: 20px; font-weight: 800; }
+.caution-scale.green .caution-verdict, .caution-scale.green .caution-score { color: #065f46; }
+.caution-scale.yellow .caution-verdict, .caution-scale.yellow .caution-score { color: #92400e; }
+.caution-scale.red .caution-verdict, .caution-scale.red .caution-score { color: #991b1b; }
+.caution-bar-wrap { width: 100%; height: 10px; background: #e5e7eb; border-radius: 99px; margin-bottom: 4px; }
+.caution-bar-fill { height: 10px; border-radius: 99px; transition: width 0.4s ease; }
+.caution-scale.green .caution-bar-fill { background: #10b981; }
+.caution-scale.yellow .caution-bar-fill { background: #f59e0b; }
+.caution-scale.red .caution-bar-fill { background: #ef4444; }
+.caution-ticks { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.caution-tick { font-size: 9px; color: #9ca3af; }
+.caution-legend { display: flex; gap: 10px; margin-bottom: 10px; }
+.caution-legend span { font-size: 11px; }
+.caution-reason { font-size: 12.5px; color: #374151; line-height: 1.5; margin-bottom: 10px; }
+.caution-points { display: flex; flex-direction: column; gap: 5px; }
+.caution-point { font-size: 12.5px; font-weight: 600; display: flex; gap: 6px; }
+.caution-scale.green .caution-point { color: #065f46; }
+.caution-scale.yellow .caution-point { color: #92400e; }
+.caution-scale.red .caution-point { color: #991b1b; }
+
 /* ── MOBILE ── */
 @media (max-width: 480px) {
   .main-content { padding: 28px 14px 0; }
@@ -629,6 +658,7 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>("en");
   const [tab, setTab] = useState<Tab>("search");
   const t = T[lang];
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Medicine[] | null>(null);
   const [sort, setSort] = useState("low");
@@ -652,6 +682,9 @@ export default function Home() {
   const [interactResult, setInteractResult] = useState<InteractionResult | null>(null);
   const [checkLoading, setCheckLoading] = useState(false);
   const [checkError, setCheckError] = useState("");
+  const [checkerSuggestions, setCheckerSuggestions] = useState<string[]>([]);
+  const [showCheckerSug, setShowCheckerSug] = useState(false);
+
   const [scanImg, setScanImg] = useState<string | null>(null);
   const [scanStatus, setScanStatus] = useState("");
   const [scanStatusType, setScanStatusType] = useState<""|"success"|"error">("");
@@ -659,10 +692,19 @@ export default function Home() {
   const [scanLoading, setScanLoading] = useState(false);
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const scanFileRef = useRef<HTMLInputElement>(null);
   const scanGalleryRef = useRef<HTMLInputElement>(null);
   const sugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const checkerSugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
+  const checkerWrapRef = useRef<HTMLDivElement>(null);
+  const queryRef = useRef(query);
+  const langRef = useRef(lang);
+  const sortRef = useRef(sort);
+  useEffect(() => { queryRef.current = query; }, [query]);
+  useEffect(() => { langRef.current = lang; }, [lang]);
+  useEffect(() => { sortRef.current = sort; }, [sort]);
 
   useEffect(() => {
     try {
@@ -701,36 +743,55 @@ export default function Home() {
         const r = await fetch("/api/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q }) });
         const d = await r.json();
         setSuggestions(d.suggestions ?? []);
-      } 
-      catch { setSuggestions([]); }
+      } catch { setSuggestions([]); }
       finally { setSugLoading(false); }
+    }, 380);
+  }, []);
+
+  const fetchCheckerSug = useCallback((q: string) => {
+    if (checkerSugTimer.current) clearTimeout(checkerSugTimer.current);
+    if (q.trim().length < 2) { setCheckerSuggestions([]); return; }
+    checkerSugTimer.current = setTimeout(async () => {
+      try {
+        const r = await fetch("/api/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: q }) });
+        const d = await r.json();
+        setCheckerSuggestions(d.suggestions ?? []);
+      } catch { setCheckerSuggestions([]); }
     }, 380);
   }, []);
 
   const sortArr = (arr: Medicine[], s: string) =>
     [...arr].sort((a, b) => s === "low" ? a.price - b.price : b.price - a.price);
 
-  const searchMed = async (q?: string) => {
-    const qry = (q ?? query).trim();
+  const searchMed = useCallback(async (q?: string) => {
+    const qry = (q ?? inputRef.current?.value ?? queryRef.current ?? "").trim();
     if (!qry) return;
-
+    const currentLang = langRef.current;
+    const currentSort = sortRef.current;
     setLoading(true); setError(""); setResults(null); setShowSug(false); setExpanded(null);
     addHistory(qry);
     try {
-      const r = await fetch("/api/medicine", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qry, language: lang }) });
+      const r = await fetch("/api/medicine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: qry, language: currentLang })
+      });
       const d = await r.json();
       if (d.error) setError("Something went wrong. Please try again.");
-      else setResults(sortArr(d.results, sort));
+      else setResults(sortArr(d.results ?? [], currentSort));
     } catch { setError("Network error. Please check your connection."); }
     finally { setLoading(false); }
-  };
+  }, []);
 
   useEffect(() => {
     if (results?.length) setResults(prev => prev ? sortArr(prev, sort) : prev);
   }, [sort]);
 
   useEffect(() => {
-    const h = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest(".search-wrap")) setShowSug(false); };
+    const h = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest(".search-wrap")) setShowSug(false);
+      if (!(e.target as HTMLElement).closest(".checker-wrap")) setShowCheckerSug(false);
+    };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
   }, []);
@@ -789,18 +850,24 @@ export default function Home() {
     reader.readAsDataURL(file); e.target.value = "";
   };
 
-  const checkInteract = async (overrideMeds?: string[]) => {
+  const checkInteract = useCallback(async (overrideMeds?: string[]) => {
     const meds = overrideMeds ?? checkerMeds;
     if (meds.length < 2) return;
     if (overrideMeds) setCheckerMeds(overrideMeds);
     setCheckLoading(true); setCheckError(""); setInteractResult(null); setTab("checker");
     try {
-      const r = await fetch("/api/interact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ medicines: meds, language: lang }) });
-      const d = await r.json();
+      const r = await fetch("/api/interact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ medicines: meds, language: langRef.current })
+      });
+      const text = await r.text();
+      const clean = text.replace(/```json|```/g, "").trim();
+      const d = JSON.parse(clean);
       if (d.error) setCheckError("Failed to check interactions."); else setInteractResult(d);
-    } catch { setCheckError("Network error."); }
+    } catch (e) { console.error(e); setCheckError("Failed to check interactions."); }
     finally { setCheckLoading(false); }
-  };
+  }, [checkerMeds]);
 
   const shareResult = async (m: Medicine, i: number) => {
     const text = `💊 ${m.name} (${m.salt})\n💰 ₹${m.price} — ${m.type}\n🏭 ${m.manufacturer}\n📋 ${m.uses}\n⏰ ${m.whenToEat}\n\nFound on MedMind — India's smartest medicine companion`;
@@ -872,11 +939,11 @@ export default function Home() {
                     <span className="search-icon-wrap">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                     </span>
-                    <input type="text" value={query} placeholder={t.searchPlaceholder} className="search-input"
+                    <input ref={inputRef} type="text" value={query} placeholder={t.searchPlaceholder} className="search-input"
                       disabled={loading || imgLoading} autoComplete="off" autoCorrect="off" spellCheck={false}
-                      onChange={e => { const v = e.target.value; setQuery(v); if (!v) { setResults(null); setError(""); setSuggestions([]); } else { fetchSug(v); setShowSug(true); } }}
+                      onChange={e => { const v = e.target.value; setQuery(v); queryRef.current = v; if (!v) { setResults(null); setError(""); setSuggestions([]); } else { fetchSug(v); setShowSug(true); } }}
                       onFocus={() => { if (suggestions.length > 0) setShowSug(true); }}
-                      onKeyDown={e => { if (e.key === "Enter") searchMed(); if (e.key === "Escape") setShowSug(false); }}
+                      onKeyDown={e => { if (e.key === "Enter") { const q = queryRef.current; if (q) searchMed(q); } if (e.key === "Escape") setShowSug(false); }}
                     />
                     <button className={`voice-btn${listening ? " listening" : ""}`} onClick={handleVoice} title={lang === "bn" ? "ভয়েস সার্চ" : "Voice search"}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -894,7 +961,7 @@ export default function Home() {
                     }
                   </button>
                   <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={handleImgChange} />
-                  <button className="search-btn" onClick={() => searchMed()} disabled={loading || !query.trim() || imgLoading}>
+                  <button className="search-btn" onClick={() => { const q = queryRef.current; if (q) searchMed(q); }} disabled={loading || !query.trim() || imgLoading}>
                     {loading ? <><span className="btn-spin" />{t.searching}</> : t.searchBtn}
                   </button>
                 </div>
@@ -922,7 +989,7 @@ export default function Home() {
                 <div className="history-section">
                   <div className="section-label">{t.history}</div>
                   <div className="chips-row">
-                    {history.map((h, i) => <button key={i} className="chip" onClick={() => { setQuery(h); searchMed(h); }}>{h}</button>)}
+                    {history.map((h, i) => <button key={i} className="chip" onClick={() => { setQuery(h); queryRef.current = h; searchMed(h); }}>{h}</button>)}
                   </div>
                 </div>
               )}
@@ -932,7 +999,7 @@ export default function Home() {
                   <div className="section-label">{t.saved}</div>
                   <div className="saved-cards">
                     {savedMeds.slice(0, 3).map((m, i) => (
-                      <div key={i} className="saved-card" onClick={() => { setQuery(m.name); searchMed(m.name); }}>
+                      <div key={i} className="saved-card" onClick={() => { setQuery(m.name); queryRef.current = m.name; searchMed(m.name); }}>
                         <div><div className="saved-name">{m.name}</div><div className="saved-meta">{m.salt} · ₹{m.price}</div></div>
                         <button className="unsave-btn" onClick={e => { e.stopPropagation(); toggleSave(m); }}>✕</button>
                       </div>
@@ -953,7 +1020,7 @@ export default function Home() {
                         ? ["জ্বর","মাথাব্যথা","সর্দি","পেটব্যথা","অ্যাসিডিটি"]
                         : ["Fever","Headache","Cold","Stomach pain","Acidity"]
                       ).map((s, i) => (
-                        <button key={i} className="trend-chip symptom-chip" onClick={() => { setQuery(s); searchMed(s); }}>
+                        <button key={i} className="trend-chip symptom-chip" onClick={() => { setQuery(s); queryRef.current = s; searchMed(s); }}>
                           <span className="trend-chip-icon">
                             {i===0 ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
                             : i===1 ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
@@ -976,7 +1043,7 @@ export default function Home() {
                         ? ["প্যারাসিটামল","অ্যাজিথ্রোমাইসিন","প্যান্টোপ্রাজোল","সেটিরিজিন","মেটফর্মিন"]
                         : ["Paracetamol","Azithromycin","Pantoprazole","Cetirizine","Metformin"]
                       ).map((m, i) => (
-                        <button key={i} className="trend-chip med-chip" onClick={() => { setQuery(m); searchMed(m); }}>
+                        <button key={i} className="trend-chip med-chip" onClick={() => { setQuery(m); queryRef.current = m; searchMed(m); }}>
                           <span className="trend-chip-icon">
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
                           </span>
@@ -1006,11 +1073,17 @@ export default function Home() {
                   <p style={{ fontSize: 13, color: "var(--text3)" }}>{t.initialSub}</p>
                 </div>
               )}
-              
               {loading && <div className="loading"><div className="spinner" /><p className="loading-text">{t.findingPrices}</p></div>}
               {error && <div className="error-box">⚠️ {error}</div>}
               {!loading && results !== null && results.length === 0 && !error && (
-                <div className="empty-state"><div className="empty-icon">🔍</div><p className="empty-title">{t.noResults}</p><p className="empty-sub">{t.noResultsSub}</p></div>
+                <div className="empty-state">
+                  <div className="empty-icon">🔍</div>
+                  <p className="empty-title">{t.noResults}</p>
+                  <p className="empty-sub">{t.noResultsSub}</p>
+                  <div style={{ marginTop: 14, padding: "10px 16px", borderRadius: 10, background: "var(--gold-light)", border: "1px solid var(--gold-border)", fontSize: 12.5, color: "var(--gold)", lineHeight: 1.5 }}>
+                    💡 {lang === "bn" ? "বানান পরীক্ষা করুন বা ভিন্ন নামে খুঁজুন — যেমন ব্র্যান্ড নামের বদলে সল্ট নাম দিয়ে" : "Try checking your spelling, or search by salt/generic name instead of brand name"}
+                  </div>
+                </div>
               )}
 
               {!loading && results !== null && results.length > 0 && (
@@ -1080,6 +1153,45 @@ export default function Home() {
                                 )}
                                 <div><div className="info-label">{t.form}</div><div className="info-value">{m.type}</div></div>
                                 <div><div className="info-label">{t.manufacturer}</div><div className="info-value">{m.manufacturer}</div></div>
+                                {m.safetyScore !== undefined && (
+                                  <div className="info-full">
+                                    <div className="info-label">Safety Rating</div>
+                                    {(() => {
+                                      const score = m.safetyScore!;
+                                      const color = score <= 3 ? "green" : score <= 6 ? "yellow" : "red";
+                                      const emoji = score <= 3 ? "✅" : score <= 6 ? "⚠️" : "🚫";
+                                      return (
+                                        <div className={`caution-scale ${color}`}>
+                                          <div className="caution-header">
+                                            <span className="caution-verdict">{emoji} {m.safetyVerdict ?? "Unknown"}</span>
+                                            <span className="caution-score">{score}/10</span>
+                                          </div>
+                                          <div className="caution-bar-wrap">
+                                            <div className="caution-bar-fill" style={{ width: `${score * 10}%` }} />
+                                          </div>
+                                          <div className="caution-ticks">
+                                            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                                              <span key={n} className="caution-tick" style={{ fontWeight: n === score ? 800 : 400 }}>{n}</span>
+                                            ))}
+                                          </div>
+                                          <div className="caution-legend">
+                                            <span style={{ color: "#16a34a" }}>● 1–3 Safe</span>
+                                            <span style={{ color: "#d97706" }}>● 4–6 Caution</span>
+                                            <span style={{ color: "#dc2626" }}>● 7–10 Avoid</span>
+                                          </div>
+                                          {m.interactionReason && <p className="caution-reason">{m.interactionReason}</p>}
+                                          {m.keyPoints && m.keyPoints.length > 0 && (
+                                            <div className="caution-points">
+                                              {m.keyPoints.map((pt, k) => (
+                                                <div key={k} className="caution-point"><span>•</span><span>{pt}</span></div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <div className="card-actions">
@@ -1113,17 +1225,53 @@ export default function Home() {
                 <div className="section-title">{t.checkerTitle}</div>
                 <div className="section-sub">{t.checkerSub}</div>
               </div>
-              <div className="add-row">
+              <div className="add-row checker-wrap" style={{ position: "relative" }}>
                 <input className="add-input" placeholder={t.addMedicine} value={checkerInput}
-                  onChange={e => setCheckerInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); } }}
+                  onChange={e => { const v = e.target.value; setCheckerInput(v); if (v.trim().length >= 2) { fetchCheckerSug(v); setShowCheckerSug(true); } else { setCheckerSuggestions([]); setShowCheckerSug(false); } }}
+                  onFocus={() => { if (checkerSuggestions.length > 0) setShowCheckerSug(true); }}
+                  onKeyDown={e => {
+                    if (e.key === "Enter" && checkerInput.trim()) {
+                      setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]);
+                      setCheckerInput("");
+                      setShowCheckerSug(false);
+                      setCheckerSuggestions([]);
+                      setInteractResult(null);
+                      setCheckError("");
+                    }
+                    if (e.key === "Escape") setShowCheckerSug(false);
+                  }}
                 />
-                <button className="add-btn" onClick={() => { if (checkerInput.trim()) { setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]); setCheckerInput(""); } }}>{t.addBtn}</button>
+                <button className="add-btn" onClick={() => {
+                  if (checkerInput.trim()) {
+                    setCheckerMeds(p => p.includes(checkerInput.trim()) ? p : [...p, checkerInput.trim()]);
+                    setCheckerInput("");
+                    setShowCheckerSug(false);
+                    setCheckerSuggestions([]);
+                    setInteractResult(null);
+                    setCheckError("");
+                  }
+                }}>{t.addBtn}</button>
+                {showCheckerSug && checkerSuggestions.length > 0 && (
+                  <div className="suggestions" style={{ top: "calc(100% + 4px)" }}>
+                    {checkerSuggestions.map((s, i) => (
+                      <div key={i} className="sug-item" onMouseDown={() => {
+                        setCheckerMeds(p => p.includes(s) ? p : [...p, s]);
+                        setCheckerInput("");
+                        setShowCheckerSug(false);
+                        setCheckerSuggestions([]);
+                        setInteractResult(null);
+                        setCheckError("");
+                      }}>
+                        <span className="sug-dot" />{s}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               {checkerMeds.length > 0 && (
                 <div className="med-tags">
                   {checkerMeds.map((m, i) => (
-                    <div key={i} className="med-tag">{m}<span className="med-tag-x" onClick={() => setCheckerMeds(p => p.filter((_,j) => j !== i))}>✕</span></div>
+                    <div key={i} className="med-tag">{m}<span className="med-tag-x" onClick={() => { setCheckerMeds(p => p.filter((_,j) => j !== i)); setInteractResult(null); setCheckError(""); }}>✕</span></div>
                   ))}
                 </div>
               )}
@@ -1150,20 +1298,66 @@ export default function Home() {
                       <div className="safety-summary">{interactResult.summary}</div>
                     </div>
                   </div>
-                  <div className="interact-body">
-                    
-                    {/* 👇 YOUR NEW CAUTION SCALE IS INTEGRATED HERE 👇 */}
-                    {interactResult.safetyScore !== undefined && interactResult.safetyVerdict && (
-                      <CautionScale 
-                        score={interactResult.safetyScore}
-                        verdict={interactResult.safetyVerdict}
-                        reason={interactResult.interactionReason || interactResult.summary}
-                        keyPoints={interactResult.keyPoints || []}
-                      />
-                    )}
 
+                  {/* CAUTION SCALE */}
+                  {interactResult.safetyScore !== undefined && (
+                    (() => {
+                      const score = interactResult.safetyScore!;
+                      const isGreen = score <= 3;
+                      const isYellow = score > 3 && score <= 6;
+                      const bgColor = isGreen ? "var(--safe-bg)" : isYellow ? "var(--warn-bg)" : "var(--danger-bg)";
+                      const borderColor = isGreen ? "var(--safe-border)" : isYellow ? "var(--warn-border)" : "var(--danger-border)";
+                      const textColor = isGreen ? "var(--safe)" : isYellow ? "var(--warn)" : "var(--danger)";
+                      const barColor = isGreen ? "#10b981" : isYellow ? "#f59e0b" : "#ef4444";
+                      const emoji = isGreen ? "✅" : isYellow ? "⚠️" : "🚫";
+                      return (
+                        <div style={{ background: bgColor, borderTop: `1.5px solid ${borderColor}`, padding: "14px 20px" }}>
+                          {/* Score row */}
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: textColor }}>
+                              Safety Score
+                            </span>
+                            <span style={{ fontSize: 18, fontWeight: 800, color: textColor }}>{emoji} {score}/10</span>
+                          </div>
+                          {/* Bar */}
+                          <div style={{ width: "100%", height: 8, background: "rgba(0,0,0,0.08)", borderRadius: 99, marginBottom: 4 }}>
+                            <div style={{ width: `${score * 10}%`, height: 8, borderRadius: 99, background: barColor, transition: "width 0.4s ease" }} />
+                          </div>
+                          {/* Ticks */}
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                              <span key={n} style={{ fontSize: 9, color: n === score ? textColor : "rgba(0,0,0,0.3)", fontWeight: n === score ? 800 : 400 }}>{n}</span>
+                            ))}
+                          </div>
+                          {/* Legend */}
+                          <div style={{ display: "flex", gap: 12, marginBottom: 10 }}>
+                            <span style={{ fontSize: 11, color: "var(--safe)" }}>● 1–3 Safe</span>
+                            <span style={{ fontSize: 11, color: "var(--warn)" }}>● 4–6 Caution</span>
+                            <span style={{ fontSize: 11, color: "var(--danger)" }}>● 7–10 Avoid</span>
+                          </div>
+                          {/* Reason */}
+                          {interactResult.interactionReason && (
+                            <p style={{ fontSize: 12.5, color: "var(--text2)", lineHeight: 1.55, marginBottom: 8 }}>
+                              {interactResult.interactionReason}
+                            </p>
+                          )}
+                          {/* Key points */}
+                          {interactResult.keyPoints && interactResult.keyPoints.length > 0 && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                              {interactResult.keyPoints.map((pt, k) => (
+                                <div key={k} style={{ display: "flex", gap: 7, fontSize: 12.5, fontWeight: 600, color: textColor }}>
+                                  <span>•</span><span>{pt}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()
+                  )}
+                  <div className="interact-body">
                     {interactResult.pairs?.length > 0 && (
-                      <div className="interact-pairs" style={{ marginTop: '16px' }}>
+                      <div className="interact-pairs">
                         {interactResult.pairs.map((p, i) => (
                           <div key={i} className={`pair-card ${p.severity}`}>
                             <div className={`pair-sev ${p.severity}`}>
@@ -1298,23 +1492,30 @@ export default function Home() {
             </div>
           )}
 
-          <div style={{ height: 24 }} />
-        </div>
-        
-        {/* 👇 NEW PWA ADD TO HOME SCREEN BANNER 👇 */}
-        <div className="pwa-banner" style={{ maxWidth: '640px', width: '100%' }}>
-          <div className="pwa-icon">📲</div>
-          <div>
-            <div className="pwa-title">Use MedMind as an App — it's free!</div>
-            <div className="pwa-desc">
-              Tap the <strong style={{fontSize: 14}}>⋮</strong> menu in your browser → <strong>"Add to Home Screen"</strong> — no app store needed.
-            </div>
-          </div>
+          <div style={{ height: 64 }} />
         </div>
 
         {/* ══ FOOTER ══ */}
         <footer className="footer">
           <div className="footer-inner">
+
+            {/* INSTALL BANNER */}
+            <div style={{
+              background: "linear-gradient(135deg, rgba(13,148,136,0.15), rgba(56,189,248,0.1))",
+              border: "1.5px solid rgba(13,148,136,0.3)",
+              borderRadius: 16, padding: "16px 20px", marginBottom: 32,
+              display: "flex", alignItems: "center", gap: 14
+            }}>
+              <div style={{ fontSize: 28, flexShrink: 0 }}>📲</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: "#fff", marginBottom: 3 }}>
+                  Use MedMind as an App — it's free!
+                </div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.5 }}>
+                  Tap the <strong style={{ color: "rgba(255,255,255,0.85)" }}>⋮ menu</strong> in your browser → <strong style={{ color: "rgba(255,255,255,0.85)" }}>"Add to Home Screen"</strong> — no app store needed.
+                </div>
+              </div>
+            </div>
 
             {/* TOP — branding */}
             <div className="footer-top">
