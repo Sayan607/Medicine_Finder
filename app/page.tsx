@@ -636,6 +636,65 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .caution-scale.yellow .caution-point { color: #92400e; }
 .caution-scale.red .caution-point { color: #991b1b; }
 
+/* ── FEEDBACK WIDGET ── */
+.feedback-section {
+  width: 100%; background: var(--white);
+  border: 1.5px solid var(--border); border-radius: 20px;
+  padding: 24px 20px; margin: 0 0 0;
+  box-shadow: var(--shadow);
+}
+.feedback-title {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  margin-bottom: 4px; font-family: 'Instrument Sans', sans-serif;
+}
+.feedback-sub {
+  font-size: 12.5px; color: var(--text3); margin-bottom: 18px; line-height: 1.5;
+}
+.stars-row {
+  display: flex; gap: 8px; margin-bottom: 18px;
+}
+.star-btn {
+  font-size: 30px; background: none; border: none; cursor: pointer;
+  transition: transform 0.15s; padding: 0; line-height: 1;
+  filter: grayscale(1); opacity: 0.35;
+}
+.star-btn.active { filter: grayscale(0); opacity: 1; transform: scale(1.15); }
+.star-btn:hover { transform: scale(1.2); filter: grayscale(0); opacity: 0.8; }
+.feedback-input {
+  width: 100%; height: 46px; padding: 0 14px; border-radius: 12px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  color: var(--text); font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px; outline: none; margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.feedback-input:focus { border-color: var(--teal); background: var(--white); }
+.feedback-input::placeholder { color: var(--text3); }
+.feedback-textarea {
+  width: 100%; height: 90px; padding: 12px 14px; border-radius: 12px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  color: var(--text); font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px; outline: none; resize: none; margin-bottom: 14px;
+  transition: border-color 0.2s; line-height: 1.5;
+}
+.feedback-textarea:focus { border-color: var(--teal); background: var(--white); }
+.feedback-textarea::placeholder { color: var(--text3); }
+.feedback-submit {
+  width: 100%; height: 50px; border-radius: 14px; border: none;
+  background: var(--teal); color: #fff;
+  font-family: 'Instrument Sans', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 4px 14px rgba(13,148,136,0.3); transition: all 0.2s;
+}
+.feedback-submit:hover:not(:disabled) { background: var(--teal2); transform: translateY(-1px); }
+.feedback-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.feedback-success {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0 4px; gap: 6px;
+}
+.feedback-success-icon { font-size: 36px; }
+.feedback-success-title { font-size: 15px; font-weight: 700; color: var(--teal); }
+.feedback-success-sub { font-size: 12.5px; color: var(--text3); text-align: center; }
+
 /* ── PROMO VIDEO ── */
 .promo-video-wrap {
   width: 100%; margin-bottom: 20px; border-radius: 16px; overflow: hidden;
@@ -802,6 +861,15 @@ export default function Home() {
   const [scanStatusType, setScanStatusType] = useState<""|"success"|"error">("");
   const [scanMeds, setScanMeds] = useState<PrescriptionMed[] | null>(null);
   const [scanLoading, setScanLoading] = useState(false);
+
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackName, setFeedbackName] = useState("");
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackDone, setFeedbackDone] = useState(false);
+  const [feedbackError, setFeedbackError] = useState("");
+
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbzGY8bKWJUZ__GHShmAawagOExKD5x0L6kUnr__hDTOVe5Mx13d7zSx4gutR5tnopx5/exec";
 
   const fileRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -995,6 +1063,30 @@ export default function Home() {
 
   const SYMPTOMS_EN = ["Fever", "Headache", "Cold & Cough", "Stomach pain", "Acidity", "Diabetes"];
   const SYMPTOMS_BN = ["জ্বর", "মাথাব্যথা", "সর্দি-কাশি", "পেটব্যথা", "অ্যাসিডিটি", "ডায়াবেটিস"];
+
+  const submitFeedback = async () => {
+    if (feedbackRating === 0) { setFeedbackError("Please select a star rating."); return; }
+    if (!feedbackName.trim()) { setFeedbackError("Please enter your name."); return; }
+    setFeedbackError("");
+    setFeedbackLoading(true);
+    try {
+      await fetch(SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: feedbackName.trim(),
+          rating: feedbackRating,
+          suggestion: feedbackText.trim() || "—",
+        }),
+      });
+      setFeedbackDone(true);
+    } catch {
+      setFeedbackError("Something went wrong. Please try again.");
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
 
   return (
     <>
@@ -1950,6 +2042,66 @@ export default function Home() {
             www.medmind.in
           </div>
 
+        </div>
+
+        {/* ══ FEEDBACK WIDGET ══ */}
+        <div style={{ width: "100%", maxWidth: 640, padding: "40px 16px 0", margin: "0 auto" }}>
+          <div className="feedback-section">
+            {feedbackDone ? (
+              <div className="feedback-success">
+                <div className="feedback-success-icon">🙏</div>
+                <div className="feedback-success-title">Thank you, {feedbackName}!</div>
+                <div className="feedback-success-sub">Your feedback helps make MedMind better for everyone in India.</div>
+              </div>
+            ) : (
+              <>
+                <div className="feedback-title">Rate MedMind</div>
+                <div className="feedback-sub">How was your experience? Your feedback goes directly to the developer.</div>
+
+                {/* Stars */}
+                <div className="stars-row">
+                  {[1,2,3,4,5].map(n => (
+                    <button key={n} className={`star-btn${feedbackRating >= n ? " active" : ""}`}
+                      onClick={() => setFeedbackRating(n)}>⭐</button>
+                  ))}
+                </div>
+
+                {/* Name */}
+                <input
+                  className="feedback-input"
+                  placeholder="Your name"
+                  value={feedbackName}
+                  onChange={e => setFeedbackName(e.target.value)}
+                  maxLength={60}
+                />
+
+                {/* Suggestion */}
+                <textarea
+                  className="feedback-textarea"
+                  placeholder="Any suggestions or feedback? (optional)"
+                  value={feedbackText}
+                  onChange={e => setFeedbackText(e.target.value)}
+                  maxLength={500}
+                />
+
+                {feedbackError && (
+                  <div style={{ fontSize: 12.5, color: "var(--danger)", marginBottom: 10, fontWeight: 600 }}>
+                    ⚠️ {feedbackError}
+                  </div>
+                )}
+
+                <button className="feedback-submit" onClick={submitFeedback} disabled={feedbackLoading}>
+                  {feedbackLoading
+                    ? <><span className="btn-spin" />Sending…</>
+                    : <>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Send Feedback
+                      </>
+                  }
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         {/* ══ FOOTER ══ */}
