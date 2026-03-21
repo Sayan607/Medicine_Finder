@@ -311,14 +311,10 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .trend-chip-icon { display: flex; align-items: center; opacity: 0.7; }
-.symptom-chip {
-  background: var(--teal-light); border-color: var(--teal-border); color: var(--teal);
-}
+.symptom-chip { background: var(--teal-light); border-color: var(--teal-border); color: var(--teal); }
 .symptom-chip:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
 .symptom-chip:hover .trend-chip-icon { opacity: 1; }
-.med-chip {
-  background: var(--white); border-color: var(--border2); color: var(--text2);
-}
+.med-chip { background: var(--white); border-color: var(--border2); color: var(--text2); }
 .med-chip:hover { background: var(--teal-light); border-color: var(--teal); color: var(--teal); }
 
 /* ── HISTORY / CHIPS ── */
@@ -588,9 +584,7 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
   background: #fff; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
 }
-.footer-logo-img img {
-  width: 90%; height: 90%; object-fit: contain; display: block;
-}
+.footer-logo-img img { width: 90%; height: 90%; object-fit: contain; display: block; }
 .footer-app-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #fff; }
 .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
 .footer-desc { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 440px; }
@@ -642,6 +636,102 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .caution-scale.yellow .caution-point { color: #92400e; }
 .caution-scale.red .caution-point { color: #991b1b; }
 
+/* ── PROMO SECTION ── */
+.promo-section {
+  width: 100%; background: #0d9488;
+  padding: 48px 20px; display: flex; flex-direction: column; align-items: center;
+  position: relative; overflow: hidden;
+}
+.promo-inner { width: 100%; max-width: 640px; position: relative; }
+
+.promo-decor-circle {
+  position: absolute; width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); top: -30px; left: -40px;
+  transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.8s ease;
+}
+.promo-decor-circle.hidden { transform: scale(0.3) translateX(-60px); opacity: 0; }
+.promo-decor-circle.visible { transform: scale(1) translateX(0); opacity: 1; }
+
+.promo-card {
+  background: #f5f0e8; border-radius: 24px; padding: 28px 24px 24px;
+  margin-bottom: 24px; position: relative; overflow: hidden;
+  transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.7s ease;
+}
+.promo-card.hidden { transform: translateY(40px); opacity: 0; }
+.promo-card.visible { transform: translateY(0); opacity: 1; }
+
+.promo-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.promo-logo-img { width: 38px; height: 38px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid rgba(13,148,136,0.2); }
+.promo-logo-img img { width: 85%; height: 85%; object-fit: contain; }
+.promo-logo-text { font-size: 18px; font-weight: 700; font-family: 'Instrument Sans', sans-serif; }
+.promo-logo-text span:first-child { color: #38bdf8; }
+.promo-logo-text span:last-child { color: #0d9488; }
+.promo-logo-sub { font-size: 10px; color: #888; display: block; font-weight: 400; margin-top: 1px; }
+
+.promo-headline { font-size: 32px; font-weight: 900; line-height: 1.15; color: #1a1714; margin-bottom: 0; font-family: 'Instrument Sans', sans-serif; }
+.promo-headline-teal { color: #0d9488; }
+
+.promo-pill {
+  position: absolute; right: -10px; bottom: -10px; width: 80px; height: 80px;
+  transition: transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.2s, opacity 0.9s ease 0.2s;
+}
+.promo-pill.hidden { transform: rotate(-30deg) scale(0.4); opacity: 0; }
+.promo-pill.visible { transform: rotate(15deg) scale(1); opacity: 1; }
+
+.promo-phone-wrap {
+  display: flex; justify-content: center; margin-bottom: 20px;
+  transition: transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s, opacity 0.8s ease 0.15s;
+}
+.promo-phone-wrap.hidden { transform: translateY(60px) scale(0.92); opacity: 0; }
+.promo-phone-wrap.visible { transform: translateY(0) scale(1); opacity: 1; }
+
+.promo-phone {
+  width: 200px; background: #fff; border-radius: 28px;
+  border: 6px solid #1a1714; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden; position: relative;
+}
+.promo-phone-notch {
+  width: 60px; height: 14px; background: #1a1714; border-radius: 0 0 10px 10px;
+  margin: 0 auto 8px; display: block;
+}
+.promo-phone-inner { padding: 0 10px 12px; }
+.promo-phone-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.promo-phone-logo { display: flex; align-items: center; gap: 5px; }
+.promo-phone-logo img { width: 20px; height: 20px; border-radius: 50%; }
+.promo-phone-logo-text { font-size: 11px; font-weight: 700; }
+.promo-phone-logo-text span:first-child { color: #38bdf8; }
+.promo-phone-logo-text span:last-child { color: #0d9488; }
+.promo-phone-lang { font-size: 8px; border: 1px solid #ccc; border-radius: 8px; padding: 2px 6px; color: #666; }
+.promo-phone-disclaimer { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; padding: 5px 7px; font-size: 7px; color: #b45309; margin-bottom: 7px; line-height: 1.4; }
+.promo-phone-tabs { display: flex; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 2px; margin-bottom: 7px; gap: 2px; }
+.promo-phone-tab { flex: 1; padding: 4px 2px; border-radius: 6px; font-size: 7px; text-align: center; font-weight: 500; color: #888; }
+.promo-phone-tab.active { background: #0d9488; color: #fff; font-weight: 700; }
+.promo-phone-search { display: flex; gap: 4px; margin-bottom: 6px; align-items: center; }
+.promo-phone-input { flex: 1; background: #f9f9f9; border: 1px solid #e5e7eb; border-radius: 6px; padding: 5px 8px; font-size: 8px; color: #333; display: flex; align-items: center; gap: 4px; }
+.promo-phone-search-btn { background: #0d9488; color: #fff; border-radius: 6px; padding: 5px 8px; font-size: 8px; font-weight: 700; white-space: nowrap; }
+.promo-phone-recent { font-size: 7px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 700; }
+.promo-phone-chips { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+.promo-phone-chip { border: 1px solid #e5e7eb; border-radius: 10px; padding: 2px 7px; font-size: 7px; color: #555; }
+.promo-phone-result-label { font-size: 7px; color: #999; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 700; margin-bottom: 4px; display: flex; justify-content: space-between; }
+.promo-phone-ai-badge { background: #f0faf9; color: #0d9488; border: 1px solid #99f6e4; border-radius: 8px; padding: 1px 5px; font-size: 6px; font-weight: 700; }
+.promo-phone-card { background: #fff; border: 1.5px solid #0d9488; border-radius: 10px; padding: 8px 10px; }
+.promo-phone-card-name { font-size: 10px; font-weight: 800; color: #1a1714; }
+.promo-phone-card-salt { font-size: 7px; color: #888; margin-bottom: 2px; }
+.promo-phone-card-right { display: flex; align-items: center; gap: 5px; }
+.promo-phone-card-price { font-size: 13px; font-weight: 800; color: #0d9488; }
+.promo-phone-card-badge { background: #0d9488; color: #fff; border-radius: 4px; padding: 1px 5px; font-size: 6px; font-weight: 800; text-transform: uppercase; }
+
+.promo-url {
+  text-align: center; color: #fff; font-size: 20px; font-weight: 800;
+  letter-spacing: -0.3px; font-family: 'Instrument Sans', sans-serif;
+  transition: transform 0.7s cubic-bezier(0.16,1,0.3,1) 0.3s, opacity 0.7s ease 0.3s;
+}
+.promo-url.hidden { transform: translateY(20px); opacity: 0; }
+.promo-url.visible { transform: translateY(0); opacity: 1; }
+
+.promo-scroll-row::-webkit-scrollbar { display: none; }
+.promo-scroll-row { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ── MOBILE ── */
 @media (max-width: 480px) {
   .main-content { padding: 28px 14px 0; }
@@ -658,6 +748,18 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>("en");
   const [tab, setTab] = useState<Tab>("search");
   const t = T[lang];
+
+  const [promoVisible, setPromoVisible] = useState(false);
+  const promoRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setPromoVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (promoRef.current) obs.observe(promoRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Medicine[] | null>(null);
@@ -702,6 +804,7 @@ export default function Home() {
   const queryRef = useRef(query);
   const langRef = useRef(lang);
   const sortRef = useRef(sort);
+  
   useEffect(() => { queryRef.current = query; }, [query]);
   useEffect(() => { langRef.current = lang; }, [lang]);
   useEffect(() => { sortRef.current = sort; }, [sort]);
@@ -882,7 +985,6 @@ export default function Home() {
 
   const SYMPTOMS_EN = ["Fever", "Headache", "Cold & Cough", "Stomach pain", "Acidity", "Diabetes"];
   const SYMPTOMS_BN = ["জ্বর", "মাথাব্যথা", "সর্দি-কাশি", "পেটব্যথা", "অ্যাসিডিটি", "ডায়াবেটিস"];
-  const symptoms = lang === "bn" ? SYMPTOMS_BN : SYMPTOMS_EN;
 
   return (
     <>
@@ -1493,6 +1595,340 @@ export default function Home() {
           )}
 
           <div style={{ height: 64 }} />
+        </div>
+
+        {/* ══ PROMO SECTION ══ */}
+        <div ref={promoRef} style={{ width: "100%", background: "#0d9488", padding: "44px 0 52px", overflow: "hidden" }}>
+
+          {/* Logo + tagline — slides in from LEFT */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+            marginBottom: 6, padding: "0 20px",
+            transition: "transform 0.8s cubic-bezier(0.16,1,0.3,1) 0s, opacity 0.8s ease 0s",
+            transform: promoVisible ? "translateX(0)" : "translateX(-60px)",
+            opacity: promoVisible ? 1 : 0,
+          }}>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "2px solid rgba(255,255,255,0.3)", flexShrink: 0 }}>
+              <img src="/medmind-logo.png" alt="MedMind" style={{ width: "85%", height: "85%", objectFit: "contain" }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", lineHeight: 1, fontFamily: "'Instrument Sans', sans-serif" }}>
+                <span style={{ color: "#38bdf8" }}>Med</span><span style={{ color: "#99f6e4" }}>Mind</span>
+              </div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", marginTop: 2 }}>India's smartest medicine companion</div>
+            </div>
+          </div>
+
+          {/* Headline — slides in from RIGHT */}
+          <div style={{
+            textAlign: "center", marginBottom: 32, padding: "0 20px",
+            transition: "transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s, opacity 0.8s ease 0.1s",
+            transform: promoVisible ? "translateX(0)" : "translateX(60px)",
+            opacity: promoVisible ? 1 : 0,
+          }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: "#fff", lineHeight: 1.2, fontFamily: "'Instrument Sans', sans-serif", letterSpacing: "-0.5px" }}>
+              Smart meds. Smart Price.<br />
+              <span style={{ color: "#99f6e4" }}>Safer</span> you.
+            </div>
+            <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.55)", marginTop: 10, lineHeight: 1.5 }}>
+              Everything about your medicine — in one place
+            </div>
+          </div>
+
+          {/* Scrollable cards — each flies up with stagger */}
+          <div style={{ display: "flex", gap: 16, overflowX: "auto", padding: "4px 20px 12px", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
+            className="promo-scroll-row">
+
+            {/* Card 1 — Search tab active */}
+            <div style={{
+              minWidth: 220, scrollSnapAlign: "start", flexShrink: 0,
+              transition: "transform 0.75s cubic-bezier(0.16,1,0.3,1) 0.2s, opacity 0.75s ease 0.2s",
+              transform: promoVisible ? "translateY(0) scale(1)" : "translateY(70px) scale(0.9)",
+              opacity: promoVisible ? 1 : 0,
+            }}>
+              <div style={{ background: "rgba(255,255,255,0.13)", borderRadius: 18, padding: "14px 12px 10px", marginBottom: 10, border: "1.5px solid rgba(255,255,255,0.22)", boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#99f6e4", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 9, display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ fontSize: 12 }}>✦</span> Search
+                </div>
+                <div style={{ background: "#fff", borderRadius: 10, overflow: "hidden", minHeight: 360 }}>
+                  <div style={{ background: "#0d9488", padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                        <img src="/medmind-logo.png" alt="MedMind" style={{ width: "90%", height: "90%", objectFit: "contain" }} />
+                      </div>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: "#fff" }}><span style={{ color: "#38bdf8" }}>Med</span><span style={{ color: "#99f6e4" }}>Mind</span></span>
+                    </div>
+                    <span style={{ fontSize: 6.5, background: "rgba(255,255,255,0.2)", color: "#fff", borderRadius: 6, padding: "1px 5px" }}>বাংলা</span>
+                  </div>
+                  <div style={{ display: "flex", background: "#f9f9f9", borderBottom: "1px solid #e5e7eb", padding: "3px" }}>
+                    {[{ label: "Search", active: true }, { label: "Interact", active: false }, { label: "Scan Rx", active: false }].map(tab => (
+                      <div key={tab.label} style={{ flex: 1, textAlign: "center", padding: "4px 2px", borderRadius: 5, background: tab.active ? "#0d9488" : "transparent", fontSize: 6.5, fontWeight: tab.active ? 800 : 500, color: tab.active ? "#fff" : "#aaa" }}>{tab.label}</div>
+                    ))}
+                  </div>
+                  <div style={{ padding: "8px 10px" }}>
+                    <div style={{ background: "#f0faf9", border: "1px solid #99f6e4", borderRadius: 7, padding: "5px 8px", fontSize: 8, color: "#0d9488", marginBottom: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span>Dolo 650</span>
+                      <span style={{ background: "#0d9488", color: "#fff", borderRadius: 4, padding: "1px 5px", fontSize: 7 }}>Search</span>
+                    </div>
+                    <div style={{ fontSize: 6.5, fontWeight: 700, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.4px", marginBottom: 4 }}>Recent Searches</div>
+                    <div style={{ display: "flex", gap: 3, flexWrap: "wrap", marginBottom: 8 }}>
+                      {["Dolo 650", "Azithromycin", "Paracetamol"].map(s => (
+                        <span key={s} style={{ border: "1px solid #e5e7eb", borderRadius: 10, padding: "1px 5px", fontSize: 6.5, color: "#555" }}>{s}</span>
+                      ))}
+                    </div>
+                    <div style={{ fontSize: 6.5, color: "#aaa", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px", marginBottom: 4, display: "flex", justifyContent: "space-between" }}>
+                      <span>2 results found</span>
+                      <span style={{ background: "#f0faf9", color: "#0d9488", border: "1px solid #99f6e4", borderRadius: 8, padding: "0px 4px", fontSize: 6, fontWeight: 800 }}>⚡ AI-powered</span>
+                    </div>
+                    <div style={{ background: "#fff", border: "1.5px solid #0d9488", borderRadius: 8, padding: "7px 8px", marginBottom: 5 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div>
+                          <div style={{ fontSize: 9, fontWeight: 800, color: "#1a1714" }}>Dolo 650</div>
+                          <div style={{ fontSize: 7, color: "#888" }}>Paracetamol 650mg</div>
+                          <div style={{ fontSize: 7, color: "#888" }}>Micro Labs Ltd</div>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 12, fontWeight: 800, color: "#0d9488" }}>₹30</div>
+                          <div style={{ background: "#0d9488", color: "#fff", borderRadius: 3, padding: "1px 4px", fontSize: 6, fontWeight: 800 }}>BEST PRICE</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8, padding: "7px 8px", marginBottom: 5 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div>
+                          <div style={{ fontSize: 9, fontWeight: 800, color: "#1a1714" }}>Calpol 650</div>
+                          <div style={{ fontSize: 7, color: "#888" }}>Paracetamol 650mg</div>
+                          <div style={{ fontSize: 7, color: "#888" }}>GSK Pharma</div>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 12, fontWeight: 800, color: "#0d9488" }}>₹38</div>
+                          <div style={{ fontSize: 7, color: "#aaa" }}>Save ₹8</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8, padding: "7px 8px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <div>
+                          <div style={{ fontSize: 9, fontWeight: 800, color: "#1a1714" }}>Pacimol 650</div>
+                          <div style={{ fontSize: 7, color: "#888" }}>Paracetamol 650mg</div>
+                          <div style={{ fontSize: 7, color: "#888" }}>Cipla Ltd</div>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 12, fontWeight: 800, color: "#0d9488" }}>₹42</div>
+                          <div style={{ fontSize: 7, color: "#aaa" }}>Save ₹12</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", textAlign: "center" }}>Find any medicine instantly</div>
+            </div>
+
+            {/* Card 2 — Medicine Detail */}
+            <div style={{
+              minWidth: 220, scrollSnapAlign: "start", flexShrink: 0,
+              transition: "transform 0.75s cubic-bezier(0.16,1,0.3,1) 0.32s, opacity 0.75s ease 0.32s",
+              transform: promoVisible ? "translateY(0) scale(1)" : "translateY(70px) scale(0.9)",
+              opacity: promoVisible ? 1 : 0,
+            }}>
+              <div style={{ background: "rgba(255,255,255,0.13)", borderRadius: 18, padding: "14px 12px 10px", marginBottom: 10, border: "1.5px solid rgba(255,255,255,0.22)", boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#99f6e4", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 9, display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ fontSize: 12 }}>🩺</span> Details
+                </div>
+                <div style={{ background: "#fff", borderRadius: 10, overflow: "hidden", padding: "10px", minHeight: 360 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#1a1714", marginBottom: 2 }}>Dolo 650</div>
+                  <div style={{ fontSize: 7, color: "#888", marginBottom: 8 }}>Paracetamol 650mg · Micro Labs Ltd</div>
+                  {[
+                    { label: "Uses", val: "Fever, Mild to moderate pain relief" },
+                    { label: "Dosage", val: "1 tablet every 6 hours as needed" },
+                    { label: "When to take", val: "Any time", pill: true },
+                  ].map((row, i) => (
+                    <div key={i} style={{ marginBottom: 7 }}>
+                      <div style={{ fontSize: 6.5, fontWeight: 800, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 2 }}>{row.label}</div>
+                      {row.pill
+                        ? <span style={{ background: "#f0faf9", color: "#0d9488", border: "1px solid #99f6e4", borderRadius: 20, padding: "2px 8px", fontSize: 7.5, fontWeight: 700 }}>🍽 {row.val}</span>
+                        : <div style={{ fontSize: 7.5, color: "#444", lineHeight: 1.4 }}>{row.val}</div>}
+                    </div>
+                  ))}
+                  <div style={{ marginBottom: 7 }}>
+                    <div style={{ fontSize: 6.5, fontWeight: 800, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 3 }}>Side Effects</div>
+                    <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                      {["Nausea", "Stomach pain", "Allergic reaction"].map(s => (
+                        <span key={s} style={{ background: "#fffbeb", border: "1px solid #fcd34d", color: "#92400e", borderRadius: 20, padding: "1px 6px", fontSize: 6.5 }}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 7 }}>
+                    <div style={{ fontSize: 6.5, fontWeight: 800, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 3 }}>Avoid With</div>
+                    <div style={{ display: "flex", gap: 3 }}>
+                      {["Warfarin", "Carbamazepine"].map(s => (
+                        <span key={s} style={{ background: "#fef2f2", border: "1px solid #fca5a5", color: "#991b1b", borderRadius: 20, padding: "1px 6px", fontSize: 6.5 }}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 6.5, fontWeight: 800, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 5 }}>Warnings</div>
+                    {[
+                      { k: "Pregnancy", v: "Safe for short-term use" },
+                      { k: "Children", v: "Consult doctor under 12" },
+                      { k: "Elderly", v: "Safe in standard doses" },
+                    ].map((w, i) => (
+                      <div key={i} style={{ display: "flex", gap: 5, marginBottom: 3, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 6, fontWeight: 800, color: "#aaa", minWidth: 44, marginTop: 1 }}>{w.k}</span>
+                        <span style={{ fontSize: 6.5, color: "#555", lineHeight: 1.4 }}>{w.v}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", textAlign: "center" }}>Full medicine info at a glance</div>
+            </div>
+
+            {/* Card 3 — Interactions */}
+            <div style={{
+              minWidth: 220, scrollSnapAlign: "start", flexShrink: 0,
+              transition: "transform 0.75s cubic-bezier(0.16,1,0.3,1) 0.44s, opacity 0.75s ease 0.44s",
+              transform: promoVisible ? "translateY(0) scale(1)" : "translateY(70px) scale(0.9)",
+              opacity: promoVisible ? 1 : 0,
+            }}>
+              <div style={{ background: "rgba(255,255,255,0.13)", borderRadius: 18, padding: "14px 12px 10px", marginBottom: 10, border: "1.5px solid rgba(255,255,255,0.22)", boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#99f6e4", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 9, display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ fontSize: 12 }}>⚡</span> Interactions
+                </div>
+                <div style={{ background: "#fff", borderRadius: 10, overflow: "hidden", minHeight: 360 }}>
+                  <div style={{ background: "#0d9488", padding: "7px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                        <img src="/medmind-logo.png" alt="MedMind" style={{ width: "90%", height: "90%", objectFit: "contain" }} />
+                      </div>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: "#fff" }}><span style={{ color: "#38bdf8" }}>Med</span><span style={{ color: "#99f6e4" }}>Mind</span></span>
+                    </div>
+                    <span style={{ fontSize: 6.5, background: "rgba(255,255,255,0.2)", color: "#fff", borderRadius: 6, padding: "1px 5px" }}>বাংলা</span>
+                  </div>
+                  <div style={{ display: "flex", background: "#f9f9f9", borderBottom: "1px solid #e5e7eb", padding: "3px" }}>
+                    {[{ label: "Search", active: false }, { label: "Interact", active: true }, { label: "Scan Rx", active: false }].map(tab => (
+                      <div key={tab.label} style={{ flex: 1, textAlign: "center", padding: "4px 2px", borderRadius: 5, background: tab.active ? "#0d9488" : "transparent", fontSize: 6.5, fontWeight: tab.active ? 800 : 500, color: tab.active ? "#fff" : "#aaa" }}>{tab.label}</div>
+                    ))}
+                  </div>
+                  <div style={{ padding: "10px" }}>
+                    <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                      {["Dolo 650", "Pan D"].map(m => (
+                        <span key={m} style={{ background: "#f0faf9", border: "1.5px solid #99f6e4", color: "#0d9488", borderRadius: 20, padding: "2px 8px", fontSize: 7, fontWeight: 700 }}>{m} ✕</span>
+                      ))}
+                    </div>
+                    <div style={{ background: "#ecfdf5", border: "1.5px solid #6ee7b7", borderRadius: 8, padding: "8px 10px", marginBottom: 8 }}>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
+                        <span style={{ fontSize: 14 }}>✅</span>
+                        <span style={{ fontSize: 9, fontWeight: 800, color: "#065f46" }}>Safe to take together</span>
+                      </div>
+                      <div style={{ fontSize: 7, color: "#065f46", lineHeight: 1.4 }}>Generally low risk of significant interactions for short-term use.</div>
+                    </div>
+                    <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 7, marginBottom: 8 }}>
+                      <div style={{ fontSize: 7, fontWeight: 800, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.4px", marginBottom: 4 }}>Safety Score</div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                        <div style={{ flex: 1, height: 6, background: "#e5e7eb", borderRadius: 99, marginRight: 8 }}>
+                          <div style={{ width: "20%", height: 6, background: "#10b981", borderRadius: 99 }} />
+                        </div>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: "#065f46" }}>2/10</span>
+                      </div>
+                      {["Dolo 650 contains Paracetamol.", "Pan D contains Pantoprazole.", "No significant interactions documented."].map((pt, i) => (
+                        <div key={i} style={{ display: "flex", gap: 4, fontSize: 6.5, fontWeight: 600, color: "#065f46", marginBottom: 3 }}>
+                          <span>•</span><span>{pt}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 8, padding: "8px 10px" }}>
+                      <div style={{ fontSize: 7, fontWeight: 800, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.4px", marginBottom: 5 }}>Pair Analysis</div>
+                      <div style={{ background: "#ecfdf5", border: "1px solid #6ee7b7", borderRadius: 6, padding: "6px 8px" }}>
+                        <div style={{ fontSize: 7, fontWeight: 800, color: "#065f46", marginBottom: 2 }}>🟢 SAFE · Dolo 650 + Pan D</div>
+                        <div style={{ fontSize: 6.5, color: "#065f46", lineHeight: 1.4 }}>No known adverse interaction between Paracetamol and Pantoprazole.</div>
+                        <div style={{ fontSize: 6, fontWeight: 700, color: "#065f46", marginTop: 4 }}>What to do: No specific action required.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", textAlign: "center" }}>Check drug interactions safely</div>
+            </div>
+
+            {/* Card 4 — Scan Rx */}
+            <div style={{
+              minWidth: 220, scrollSnapAlign: "start", flexShrink: 0,
+              transition: "transform 0.75s cubic-bezier(0.16,1,0.3,1) 0.56s, opacity 0.75s ease 0.56s",
+              transform: promoVisible ? "translateY(0) scale(1)" : "translateY(70px) scale(0.9)",
+              opacity: promoVisible ? 1 : 0,
+            }}>
+              <div style={{ background: "rgba(255,255,255,0.13)", borderRadius: 18, padding: "14px 12px 10px", marginBottom: 10, border: "1.5px solid rgba(255,255,255,0.22)", boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: "#99f6e4", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 9, display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ fontSize: 12 }}>◈</span> Scan Rx
+                </div>
+                <div style={{ background: "#fff", borderRadius: 10, overflow: "hidden", minHeight: 360 }}>
+                  <div style={{ background: "#0d9488", padding: "7px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                        <img src="/medmind-logo.png" alt="MedMind" style={{ width: "90%", height: "90%", objectFit: "contain" }} />
+                      </div>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: "#fff" }}><span style={{ color: "#38bdf8" }}>Med</span><span style={{ color: "#99f6e4" }}>Mind</span></span>
+                    </div>
+                    <span style={{ fontSize: 6.5, background: "rgba(255,255,255,0.2)", color: "#fff", borderRadius: 6, padding: "1px 5px" }}>বাংলা</span>
+                  </div>
+                  <div style={{ display: "flex", background: "#f9f9f9", borderBottom: "1px solid #e5e7eb", padding: "3px" }}>
+                    {[{ label: "Search", active: false }, { label: "Interact", active: false }, { label: "Scan Rx", active: true }].map(tab => (
+                      <div key={tab.label} style={{ flex: 1, textAlign: "center", padding: "4px 2px", borderRadius: 5, background: tab.active ? "#0d9488" : "transparent", fontSize: 6.5, fontWeight: tab.active ? 800 : 500, color: tab.active ? "#fff" : "#aaa" }}>{tab.label}</div>
+                    ))}
+                  </div>
+                  <div style={{ padding: "10px" }}>
+                    <div style={{ background: "#f5f5f0", border: "1.5px solid #99f6e4", borderRadius: 8, padding: "8px", marginBottom: 8, position: "relative" }}>
+                      <div style={{ fontSize: 6, color: "#0d9488", fontWeight: 700, textAlign: "center", marginBottom: 4 }}>MISSION HOSPITAL</div>
+                      {["Azil 500", "Lokitab DSR", "Pantop 40", "Metformin", "Calpol"].map((med, i) => (
+                        <div key={i} style={{ fontSize: 6.5, color: "#444", marginBottom: 1.5, paddingLeft: 6 }}>• {med}</div>
+                      ))}
+                      <div style={{ marginTop: 5, fontSize: 7, color: "#0d9488", fontWeight: 700 }}>✓ 5 medicines found</div>
+                    </div>
+                    <div style={{ fontSize: 6.5, fontWeight: 800, color: "#aaa", textTransform: "uppercase", letterSpacing: "0.4px", marginBottom: 5 }}>Detected Medicines</div>
+                    {[
+                      { name: "Azil 500", dose: "500mg", when: "Before food", freq: "Once daily" },
+                      { name: "Lokitab DSR", dose: "", when: "", freq: "Twice daily" },
+                      { name: "Pantop 40", dose: "40mg", when: "Before food", freq: "Once daily" },
+                      { name: "Metformin", dose: "500mg", when: "After food", freq: "Twice daily" },
+                    ].map((m, i) => (
+                      <div key={i} style={{ background: "#f9f9f9", border: "1px solid #e5e7eb", borderRadius: 7, padding: "5px 7px", marginBottom: 4 }}>
+                        <div style={{ fontSize: 8, fontWeight: 800, color: "#1a1714", marginBottom: 3 }}>
+                          ◈ {m.name} {m.dose && <span style={{ background: "#f0faf9", color: "#0d9488", border: "1px solid #99f6e4", borderRadius: 5, padding: "0px 4px", fontSize: 6.5 }}>{m.dose}</span>}
+                        </div>
+                        <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                          {m.when && <span style={{ background: "#f0faf9", color: "#0d9488", border: "1px solid #99f6e4", borderRadius: 10, padding: "1px 5px", fontSize: 6 }}>🍽 {m.when}</span>}
+                          {m.freq && <span style={{ background: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", borderRadius: 10, padding: "1px 5px", fontSize: 6 }}>🕐 {m.freq}</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.9)", textAlign: "center" }}>Scan prescriptions instantly</div>
+            </div>
+
+          </div>
+
+          {/* Swipe hint */}
+          <div style={{
+            textAlign: "center", marginTop: 10, fontSize: 11, color: "rgba(255,255,255,0.4)",
+            transition: "opacity 0.8s ease 0.7s",
+            opacity: promoVisible ? 1 : 0,
+          }}>← swipe to explore →</div>
+
+          {/* URL */}
+          <div style={{
+            textAlign: "center", marginTop: 22, fontSize: 19, fontWeight: 800, color: "#fff",
+            letterSpacing: "-0.3px", fontFamily: "'Instrument Sans', sans-serif",
+            transition: "transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.6s, opacity 0.8s ease 0.6s",
+            transform: promoVisible ? "translateY(0)" : "translateY(24px)",
+            opacity: promoVisible ? 1 : 0,
+          }}>
+            www.medmind.in
+          </div>
+
         </div>
 
         {/* ══ FOOTER ══ */}
