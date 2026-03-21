@@ -636,6 +636,16 @@ body { background: var(--bg); font-family: 'Instrument Sans', sans-serif; color:
 .caution-scale.yellow .caution-point { color: #92400e; }
 .caution-scale.red .caution-point { color: #991b1b; }
 
+/* ── PROMO VIDEO ── */
+.promo-video-wrap {
+  width: 100%; margin-bottom: 20px; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1); background: #000;
+  border: 1.5px solid var(--border);
+}
+.promo-video-wrap video {
+  width: 100%; display: block; max-height: 260px; object-fit: cover;
+}
+
 /* ── PROMO SECTION ── */
 .promo-section {
   width: 100%; background: #0d9488;
@@ -1006,6 +1016,17 @@ export default function Home() {
               </div>
             </div>
             <button className="lang-btn" onClick={() => setLang(l => l === "en" ? "bn" : "en")}>{t.langBtn}</button>
+          </div>
+
+          {/* PROMO VIDEO */}
+          <div className="promo-video-wrap">
+            <video
+              src="/promovideo.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
           </div>
 
           {/* DISCLAIMER */}
